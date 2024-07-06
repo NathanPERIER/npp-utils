@@ -1,0 +1,9 @@
+
+# Ignore everything in this folder
+*
+
+# Exception for this file
+!.gitignore
+
+# Exceptions for wrap files
+!/fmt.wrap
