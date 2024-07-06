@@ -1,7 +1,8 @@
 
 test_source_files = [
     'type_name.cc',
-    'format/csv.cc'
+    'format/csv.cc',
+    'string/split.cc'
 ]
 
 
