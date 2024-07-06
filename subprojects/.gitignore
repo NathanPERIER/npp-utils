@@ -7,3 +7,4 @@
 
 # Exceptions for wrap files
 !/fmt.wrap
+!/catch2.wrap
