@@ -1,5 +1,6 @@
 
 test_source_files = [
+    'type_name.cc',
     'format/csv.cc'
 ]
 
