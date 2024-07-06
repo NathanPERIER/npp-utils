@@ -27,5 +27,6 @@ cpputils_lib = static_library(
 
 cpputils_dep = declare_dependency(
     link_with : cpputils_lib,
+    dependencies: [fmt_dep],
     include_directories : headers
 )
