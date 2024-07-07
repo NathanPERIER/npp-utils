@@ -77,6 +77,24 @@ public:
     iterator begin() { return iterator::make_begin(_view, _separator); }
     iterator end()   { return iterator::make_end(_view, _separator);   }
 
+    template <class Container>
+    void collect_to(std::insert_iterator<Container> out) {
+        for(iterator it = begin(); it != end(); ++it) {
+            if constexpr (std::convertible_to<typename Container::value_type, std::string_view>) {
+                out = *it;
+            } else {
+                out = Container(*it);
+            }
+        }
+    }
+
+    template <class Container> requires(std::constructible_from<Container>)
+    Container to() {
+        Container res;
+        collect_to(std::insert_iterator<Container>(res, res.end()));
+        return res;
+    }
+
 private:
     std::string_view _view;
     std::string _separator;
