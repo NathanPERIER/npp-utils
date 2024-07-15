@@ -18,6 +18,8 @@ TEST_CASE("Integer positive finite interval") {
     CHECK(!i.contains(31));
     CHECK(!i.contains(65));
 
+    CHECK("[32, 64]" == fmt::format("{}", i));
+
     CHECK(i == npp::interval(std::pair(32,64)));
     CHECK(i != npp::interval(std::pair(32,std::nullopt)));
 }
@@ -32,6 +34,8 @@ TEST_CASE("Integer negative and positive finite interval") {
     for(int j = -16; j <= 64; j++) {
         CHECK(i.contains(j));
     }
+
+    CHECK("[-16, 64]" == fmt::format("{}", i));
 }
 
 TEST_CASE("Integer negatively infinite interval") {
@@ -44,6 +48,8 @@ TEST_CASE("Integer negatively infinite interval") {
     CHECK(i.contains(0));
     CHECK(i.contains(64));
     CHECK(!i.contains(65));
+
+    CHECK("[-inf, 64]" == fmt::format("{}", i));
 }
 
 TEST_CASE("Integer positively infinite interval") {
@@ -56,6 +62,8 @@ TEST_CASE("Integer positively infinite interval") {
     CHECK(i.contains(0));
     CHECK(i.contains(4096));
     CHECK(i.contains(std::numeric_limits<int>::max()));
+
+    CHECK("[-2, +inf]" == fmt::format("{}", i));
 }
 
 TEST_CASE("Integer dual infinite interval") {
@@ -68,4 +76,6 @@ TEST_CASE("Integer dual infinite interval") {
     CHECK(i.contains(0));
     CHECK(i.contains(1024));
     CHECK(i.contains(std::numeric_limits<int>::max()));
+
+    CHECK("[-inf, +inf]" == fmt::format("{}", i));
 }

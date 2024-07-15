@@ -25,6 +25,9 @@ public:
 
     bool is_finite() const { return _lb.has_value() && _hb.has_value(); }
 
+    std::optional<int> lower_bound()  const { return _lb; }
+    std::optional<int> higher_bound() const { return _hb; }
+
     std::optional<int> length() const {
         return is_finite() ? std::optional(_hb.value() - _lb.value() + 1) : std::nullopt;
     }
@@ -54,4 +57,30 @@ private:
 } // namespace npp
 
 
+template <>
+struct fmt::formatter<npp::interval> {
 
+    constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
+        auto it = ctx.begin();
+        if (it != ctx.end() && *it != '}') {
+            throw fmt::format_error("invalid interval format");
+        }
+        return it;
+    }
+
+    auto format(const npp::interval& itv, fmt::format_context& ctx) const -> fmt::format_context::iterator {
+        fmt::format_to(ctx.out(), "[");
+        if(itv.lower_bound().has_value()) {
+            fmt::format_to(ctx.out(), "{}", itv.lower_bound().value());
+        } else {
+            fmt::format_to(ctx.out(), "-inf");
+        }
+        fmt::format_to(ctx.out(), ", ");
+        if(itv.higher_bound().has_value()) {
+            fmt::format_to(ctx.out(), "{}", itv.higher_bound().value());
+        } else {
+            fmt::format_to(ctx.out(), "+inf");
+        }
+        return fmt::format_to(ctx.out(), "]");
+    }
+};
