@@ -3,6 +3,7 @@ test_source_files = [
     'hexdump.cc',
     'type_name.cc',
     'format/csv.cc',
+    'math/interval.cc',
     'string/split.cc'
 ]
 
