@@ -71,3 +71,60 @@ TEST_CASE("Negative fractions") {
     CHECK(frac3.num() == 7);
     CHECK(frac3.den() == 6);
 }
+
+TEST_CASE("Fraction quotients") {
+    npp::fraction<int32_t> frac0(0, 5);
+    CHECK(0 == frac0.quotient());
+
+    npp::fraction<int32_t> frac1(4, 5);
+    npp::fraction<int32_t> frac2(5, 5);
+    npp::fraction<int32_t> frac3(6, 5);
+    CHECK(0 == frac1.quotient());
+    CHECK(1 == frac2.quotient());
+    CHECK(1 == frac3.quotient());
+
+    npp::fraction<int32_t> nfrac1(-4, 5);
+    npp::fraction<int32_t> nfrac2(-5, 5);
+    npp::fraction<int32_t> nfrac3(-6, 5);
+    CHECK( 0 == nfrac1.quotient());
+    CHECK(-1 == nfrac2.quotient());
+    CHECK(-1 == nfrac3.quotient());
+}
+
+TEST_CASE("Floor fractions") {
+    npp::fraction<int32_t> frac0(0, 5);
+    CHECK(0 == frac0.floor());
+
+    npp::fraction<int32_t> frac1(4, 5);
+    npp::fraction<int32_t> frac2(5, 5);
+    npp::fraction<int32_t> frac3(6, 5);
+    CHECK(0 == frac1.floor());
+    CHECK(1 == frac2.floor());
+    CHECK(1 == frac3.floor());
+
+    npp::fraction<int32_t> nfrac1(-4, 5);
+    npp::fraction<int32_t> nfrac2(-5, 5);
+    npp::fraction<int32_t> nfrac3(-6, 5);
+    CHECK(-1 == nfrac1.floor());
+    CHECK(-1 == nfrac2.floor());
+    CHECK(-2 == nfrac3.floor());
+}
+
+TEST_CASE("Ceil fractions") {
+    npp::fraction<int32_t> frac0(0, 5);
+    CHECK(0 == frac0.ceil());
+
+    npp::fraction<int32_t> frac1(4, 5);
+    npp::fraction<int32_t> frac2(5, 5);
+    npp::fraction<int32_t> frac3(6, 5);
+    CHECK(1 == frac1.ceil());
+    CHECK(1 == frac2.ceil());
+    CHECK(2 == frac3.ceil());
+
+    npp::fraction<int32_t> nfrac1(-4, 5);
+    npp::fraction<int32_t> nfrac2(-5, 5);
+    npp::fraction<int32_t> nfrac3(-6, 5);
+    CHECK( 0 == nfrac1.ceil());
+    CHECK(-1 == nfrac2.ceil());
+    CHECK(-1 == nfrac3.ceil());
+}
