@@ -27,21 +27,22 @@ struct fmt::formatter<npp::csv_field> {
 
     auto format(npp::csv_field field, fmt::format_context& ctx) const -> fmt::format_context::iterator {
         fmt::format_to(ctx.out(), "{}", quote);
-        size_t begin = 0;
-        size_t end = field.data.find(quote);
-        while(true) {
-            if(end == std::string_view::npos) {
-                fmt::format_to(ctx.out(), "{}", field.data.substr(begin));
+
+        size_t prev_pos = 0;
+        size_t pos = field.data.find(quote);
+        while(pos != std::string_view::npos) {
+            fmt::format_to(ctx.out(), "{}{}", field.data.substr(prev_pos, pos - prev_pos + 1), quote);
+            prev_pos = pos + 1;
+            if(prev_pos >= field.data.size()) {
                 break;
             }
-            end++;
-            fmt::format_to(ctx.out(), "{}{}", field.data.substr(begin, end - begin), quote);
-            if(end >= field.data.length()) {
-                break;
-            }
-            begin = end;
-            end = field.data.find(quote, begin);
+            pos = field.data.find(quote, prev_pos);
         }
+
+        if(prev_pos < field.data.size()) {
+            fmt::format_to(ctx.out(), "{}", field.data.substr(prev_pos));
+        }
+
         return fmt::format_to(ctx.out(), "{}", quote);
     }
 };
