@@ -5,6 +5,7 @@ test_source_files = [
     'format/csv.cc',
     'math/fraction.cc',
     'math/interval.cc',
+    'memory/copy_ptr.cc',
     'string/split.cc'
 ]
 
