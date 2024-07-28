@@ -60,7 +60,10 @@ using token_variant = std::variant<
 >;
 
 template <typename T>
-constexpr std::string_view token_type_name() { return npp::type_name<T>().substr(13); }
+concept token_option = variant_alternative<T, token_variant>;
+
+template <token_option Token>
+constexpr std::string_view token_type_name() { return npp::type_name<Token>().substr(13); }
 
 
 
@@ -77,10 +80,10 @@ public:
 
     const token_variant& raw() const { return _token; }
 
-    template <typename T>
-    std::optional<T> get() const {
-        const T* res = std::get_if<T>(&_token);
-        return (res == nullptr) ? std::nullopt : std::optional<T>(*res);
+    template <token_option Token>
+    std::optional<Token> get() const {
+        const Token* res = std::get_if<Token>(&_token);
+        return (res == nullptr) ? std::nullopt : std::optional<Token>(*res);
     }
 
 private:
@@ -123,22 +126,22 @@ public:
     }
 
     /// @brief attemps retrieving a specific type of token
-    /// @tparam T the token type
+    /// @tparam Token the token type
     /// @return the current token if it has the right type, or std::nullopt
-    template <typename T>
-    std::optional<T> try_get() {
-        std::optional<T> res = peek().get<T>();
+    template <token_option Token>
+    std::optional<Token> try_get() {
+        std::optional<Token> res = peek().get<Token>();
         if(res != std::nullopt) { drop(); }
         return res;
     }
 
     /// @brief attemps retrieving a specific type of token
-    /// @tparam T the token type
+    /// @tparam Token the token type
     /// @return the current token if it has the right type
-    /// @throws std::runtime_error if the current token's type is incorrect (TODO)
-    template <typename T>
-    T get() {
-        std::optional<T> res = peek().get<T>();
+    /// @throws std::runtime_error if the current token's type is incorrect
+    template <token_option Token>
+    Token get() {
+        std::optional<Token> res = peek().get<Token>();
         if(res == std::nullopt) {
             throw std::runtime_error("Unexpected token"); // TODO
         }
@@ -146,18 +149,18 @@ public:
         return res.value();
     }
 
-    template <typename T>
+    template <token_option Token>
     [[nodiscard]] bool discard() {
-        if(peek().get<T>().has_value()) {
+        if(peek().get<Token>().has_value()) {
             drop();
             return true;
         }
         return false;
     }
 
-    template <typename T>
+    template <token_option Token>
     void expect() {
-        if(!discard<T>()) {
+        if(!discard<Token>()) {
             throw std::runtime_error("Unexpected token"); // TODO
         }
     }
