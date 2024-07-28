@@ -1,4 +1,4 @@
-project('cpp-utils', ['c','cpp'], default_options: ['cpp_std=c++2a'])
+project('npp-utils', ['c','cpp'], default_options: ['cpp_std=c++2a'])
 
 cmake = import('cmake')
 

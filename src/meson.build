@@ -11,12 +11,12 @@ sources = [
 ]
 
 headers = [
-    cpputils_headers_dir
+    npputils_headers_dir
 ]
 
 
-cpputils_lib = static_library(
-    'cpputils_static', sources,
+npputils_lib = static_library(
+    'npputils_static', sources,
     dependencies: [fmt_dep],
     cpp_args: cpp_flags,
     link_args: l_args,
@@ -25,8 +25,8 @@ cpputils_lib = static_library(
     build_by_default: true
 )
 
-cpputils_dep = declare_dependency(
-    link_with : cpputils_lib,
+npputils_dep = declare_dependency(
+    link_with : npputils_lib,
     dependencies: [fmt_dep],
     include_directories : headers
 )
