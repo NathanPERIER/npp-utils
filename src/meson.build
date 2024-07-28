@@ -7,7 +7,7 @@ l_args = []
 
 
 sources = [
-	# 'utils.cc'
+	'string/lexer.cc'
 ]
 
 headers = [
