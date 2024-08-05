@@ -1,2 +1,2 @@
 
-cpputils_headers_dir = include_directories('.')
+npputils_headers_dir = include_directories('.')
