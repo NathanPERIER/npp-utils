@@ -1,6 +1,10 @@
 
 # CPP utils
 
+These are some utilities I have used in personal projects and find quite useful. It is not necessarily intended to be included as a library, as some better alternatives may exist in libraries like boost or folly. There are mainly two goals with this repository :
+- To provide small functionalities that can be integrated in any project while relying only on the stdlib (maybe also `fmt` for conveniency, but this can usually be replaced by `std::ostream` quite easily).
+- To showcase ideas that can be copied and modified to make a specialised component adapted to the needs of a projects.
+
 ## Build
 
 ### Setup
