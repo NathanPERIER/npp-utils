@@ -6,6 +6,7 @@ test_source_files = [
     'math/fraction.cc',
     'math/interval.cc',
     'memory/copy_ptr.cc',
+    'string/join.cc',
     'string/lexer.cc',
     'string/split.cc'
 ]
