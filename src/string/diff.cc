@@ -126,9 +126,9 @@ bool myers_diff(const std::vector<std::string_view>& a, const std::vector<std::s
 
 	int32_t x = static_cast<int32_t>(a.size());
 	int32_t y = static_cast<int32_t>(b.size());
+	int32_t k = x - y;
 	while(x > 0 || y > 0) {
 		int32_t d = static_cast<int32_t>(ses.size()) - 2;
-		int32_t k = x - y;
 		ses.pop();
 		// fmt::print("[k={}, d={}] ", k, d);
 		if(k == -d || (k != d && ses.top()[k-1] < ses.top()[k+1])) {
