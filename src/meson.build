@@ -7,9 +7,9 @@ l_args = []
 
 
 sources = [
+	'program/environ.cc',
 	'string/diff.cc',
 	'string/lexer.cc',
-	'system/environ.cc',
 	'system/errno.cc',
 	'system/path.cc'
 ]

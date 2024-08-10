@@ -3,7 +3,7 @@
 
 #include <unistd.h>
 
-#include <npp/system/environ.hh>
+#include <npp/program/environ.hh>
 
 
 const std::string test_variable = "NPP_TEST_ENV_VAR";
