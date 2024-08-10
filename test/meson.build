@@ -7,6 +7,7 @@ test_source_files = [
     'math/interval.cc',
     'memory/copy_ptr.cc',
     'memory/finally.cc',
+    'program/arguments.cc',
     'program/environ.cc',
     'string/diff.cc',
     'string/join.cc',
