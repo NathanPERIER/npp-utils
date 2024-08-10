@@ -8,7 +8,9 @@ l_args = []
 
 sources = [
 	'string/diff.cc',
-	'string/lexer.cc'
+	'string/lexer.cc',
+	'system/environ.cc',
+	'system/errno.cc'
 ]
 
 headers = [

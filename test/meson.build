@@ -10,7 +10,9 @@ test_source_files = [
     'string/diff.cc',
     'string/join.cc',
     'string/lexer.cc',
-    'string/split.cc'
+    'string/split.cc',
+    'system/environ.cc',
+    'system/errno.cc'
 ]
 
 
