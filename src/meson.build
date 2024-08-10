@@ -10,7 +10,8 @@ sources = [
 	'string/diff.cc',
 	'string/lexer.cc',
 	'system/environ.cc',
-	'system/errno.cc'
+	'system/errno.cc',
+	'system/path.cc'
 ]
 
 headers = [

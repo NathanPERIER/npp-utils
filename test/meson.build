@@ -12,7 +12,8 @@ test_source_files = [
     'string/lexer.cc',
     'string/split.cc',
     'system/environ.cc',
-    'system/errno.cc'
+    'system/errno.cc',
+    'system/path.cc'
 ]
 
 
