@@ -21,4 +21,6 @@ catch2_dep = catch2_proj.get_variable('catch2_with_main_dep')
 subdir('lib')
 subdir('src')
 
+subdir('poc')
+
 subdir('test')
