@@ -80,6 +80,16 @@ namespace npp {
  * the size of which is proportional to the number of edits.
  */
 
+/*
+ * Improvement to the original algorithm : since each iteration only stores values in the odd or even
+ * cells of the array, we can use the same array for two consecutive iterations, thus reducing the
+ * space used in the worst case by two.
+ * Since the first array (depth zero) is special, we only create a new array when processing an odd
+ * depth, but we have to make sure it is big enough in order to accomodate for the following iteration.
+ *
+ * The inconvenient is that we have to compute the depth at which the algorithm stopped when unwinding the path.
+ */
+
 std::stack<::sym_vec> myers_ses(const std::vector<std::string_view>& a, const std::vector<std::string_view>& b) {
 	std::stack<::sym_vec> res;
 	res.emplace(1);
@@ -89,7 +99,7 @@ std::stack<::sym_vec> myers_ses(const std::vector<std::string_view>& a, const st
 	for(size_t d = 0; d <= a.size() + b.size(); d++) {
 		// fmt::print("======= d={} =========\n", d);
 		const ::sym_vec& prev_v = res.top();
-		::sym_vec& v = res.emplace(d == 0 ? 1 : d);
+		::sym_vec& v = (d % 2 == 0) ? res.top() : res.emplace(d+1);
 		for(int32_t k = -static_cast<int32_t>(d); k <= static_cast<int32_t>(d); k += 2) {
 			// fmt::print("[k={}] ", k);
 			size_t x;
@@ -110,6 +120,7 @@ std::stack<::sym_vec> myers_ses(const std::vector<std::string_view>& a, const st
 			v[k] = x;
 			// fmt::print(" -> ({}, {})\n", x, y);
 			if(x >= a.size() && y >= b.size()) {
+				// fmt::print("max_d={}\n", d);
 				return res;
 			}
 		}
@@ -127,9 +138,20 @@ bool myers_diff(const std::vector<std::string_view>& a, const std::vector<std::s
 	int32_t x = static_cast<int32_t>(a.size());
 	int32_t y = static_cast<int32_t>(b.size());
 	int32_t k = x - y;
+	const int32_t k_parity = (k >= 0) ? (k % 2) : (-1 * k%2);
+	int32_t d = (static_cast<int32_t>(ses.size()) - 1 - k_parity) * 2 + k_parity;
+	// d even => s = (d/2)+1
+	// d odd  => s = (d/2)+2
+	// k odd <==> d odd
 	while(x > 0 || y > 0) {
-		int32_t d = static_cast<int32_t>(ses.size()) - 2;
-		ses.pop();
+		//fmt::print("s={} x={} y={} k={} d={}\n", ses.size(), x, y, k, d);
+		if(d % 2 == 1) {
+			// The top layer always has to be removed first
+			// If the current depths is even, we know that the top layer's depth is odd and thus
+			// the top layer is stored in the same buffer as the current layer, so we can only delete
+			// the buffer when the current depth is odd
+			ses.pop();
+		}
 		// fmt::print("[k={}, d={}] ", k, d);
 		if(k == -d || (k != d && ses.top()[k-1] < ses.top()[k+1])) {
 			k++;
@@ -154,6 +176,7 @@ bool myers_diff(const std::vector<std::string_view>& a, const std::vector<std::s
 		}
 		x = prev_x;
 		y = prev_y;
+		d--;
 	}
 	return modified;
 }
