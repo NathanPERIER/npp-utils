@@ -32,12 +32,12 @@ int main(int argc, char** argv) {
     npp::program_args args(argc, argv);
 
     if((args.size() > 0) && (args.drop("-h") || args.drop("--help"))) {
-        help(*argv);
+        help(args.executable());
         return 0;
     }
 
     if(args.size() < 2) {
-        help(*argv);
+        help(args.executable());
         return 1;
     }
 

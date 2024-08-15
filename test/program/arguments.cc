@@ -19,18 +19,33 @@ TEST_CASE("Init from program args") {
     p1.push("--file");
     p1.push("/dev/null");
 
-    char* argv[4] = {
-        const_cast<char*>("/path/to/prog"),
-        const_cast<char*>("test"),
-        const_cast<char*>("--file"),
-        const_cast<char*>("/dev/null")
+    const char* argv[5] = {
+        "/path/to/prog",
+        "test",
+        "--file",
+        "/dev/null",
+        nullptr
+    };
+
+    npp::program_args p2(3, argv+1, false);
+    CHECK(p2.executable() == "");
+    CHECK(p1 == p2);
+}
+
+TEST_CASE("Init from program args with executable path") {
+    npp::program_args p1("/path/to/prog", {"test", "--file", "/dev/null"});
+
+    const char* argv[5] = {
+        "/path/to/prog",
+        "test",
+        "--file",
+        "/dev/null",
+        nullptr
     };
 
     npp::program_args p2(4, argv);
+    CHECK(p2.executable() == "/path/to/prog");
     CHECK(p1 == p2);
-
-    npp::program_args p3(3, argv+1, false);
-    CHECK(p1 == p3);
 }
 
 TEST_CASE("Pull and push from/to args") {

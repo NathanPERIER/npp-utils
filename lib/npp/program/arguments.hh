@@ -14,11 +14,24 @@ class program_args {
 public:
     program_args(): _args() {}
     program_args(std::initializer_list<std::string> args): _args(args) {}
-    program_args(int argc, char** argv, bool drop_first = true): _args() {
+    program_args(std::string executable, std::initializer_list<std::string> args): _executable(std::move(executable)), _args(args) {}
+    program_args(int argc, char** argv, bool drop_first = true): program_args(argc, const_cast<const char**>(argv), drop_first) {}
+    program_args(int argc, const char** argv, bool drop_first = true): _executable((drop_first && argc >= 1) ? *argv : ""), _args() {
         for(int i = (drop_first ? 1 : 0); i < argc; i++) {
             _args.emplace_back(*(argv + i));
         }
     }
+
+    program_args(const program_args& args): _executable(args._executable), _args(args._args) { };
+    program_args& operator=(const program_args& args) {
+        _cache.clear();
+        _executable = args._executable;
+        _args = args._args;
+        return *this;
+    };
+
+    program_args(program_args&&) = delete;
+    program_args& operator=(program_args&&) = delete;
 
     void drop() {
         if(_args.empty()) {
@@ -59,6 +72,8 @@ public:
         clear_cache();
     }
 
+    std::string_view executable() const { return _executable; }
+
     size_t size() const { return _args.size(); }
     size_t argc() const { return size();       }
 
@@ -66,14 +81,13 @@ public:
 
     /// @warning any modification on the object will invalidate the returned pointer, also
     ///          modifying the returned pointer might cause undefined behaviours
-    char** argv() {
+    const char** argv() {
         if(_cache.size() > 0) {
             return _cache.data();
         }
 
         for(std::string& arg: _args) {
-            // This is terribly bad, is there a better way ?
-            _cache.push_back(const_cast<char*>(arg.c_str()));
+            _cache.push_back(arg.c_str());
         }
         _cache.push_back(nullptr);
 
@@ -81,12 +95,14 @@ public:
     }
 
     bool operator==(const program_args& args) const {
-        return _args == args._args;
+        return (_args       == args._args      )
+            && (_executable == args._executable);
     }
 
 private:
+    std::string _executable;
     std::deque<std::string> _args;
-    mutable std::vector<char*> _cache;
+    std::vector<const char*> _cache;
 
     void clear_cache() {
         if(_cache.size() > 0) {
