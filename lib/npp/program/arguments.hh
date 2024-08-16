@@ -15,8 +15,9 @@ public:
     program_args(): _args() {}
     program_args(std::initializer_list<std::string> args): _args(args) {}
     program_args(std::string executable, std::initializer_list<std::string> args): _executable(std::move(executable)), _args(args) {}
-    program_args(int argc, char** argv, bool drop_first = true): program_args(argc, const_cast<const char**>(argv), drop_first) {}
-    program_args(int argc, const char** argv, bool drop_first = true): _executable((drop_first && argc >= 1) ? *argv : ""), _args() {
+    program_args(int argc, char** argv, bool drop_first = true):       program_args(argc, const_cast<const char* const*>(argv), drop_first) {}
+    program_args(int argc, char* const* argv, bool drop_first = true): program_args(argc, const_cast<const char* const*>(argv), drop_first) {}
+    program_args(int argc, const char* const* argv, bool drop_first = true): _executable((drop_first && argc >= 1) ? *argv : ""), _args() {
         for(int i = (drop_first ? 1 : 0); i < argc; i++) {
             _args.emplace_back(*(argv + i));
         }
@@ -81,13 +82,13 @@ public:
 
     /// @warning any modification on the object will invalidate the returned pointer, also
     ///          modifying the returned pointer might cause undefined behaviours
-    const char** argv() {
+    char* const* argv() {
         if(_cache.size() > 0) {
             return _cache.data();
         }
 
         for(std::string& arg: _args) {
-            _cache.push_back(arg.c_str());
+            _cache.push_back(arg.data());
         }
         _cache.push_back(nullptr);
 
@@ -102,7 +103,7 @@ public:
 private:
     std::string _executable;
     std::deque<std::string> _args;
-    std::vector<const char*> _cache;
+    std::vector<char*> _cache;
 
     void clear_cache() {
         if(_cache.size() > 0) {
