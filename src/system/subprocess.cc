@@ -31,31 +31,35 @@ std::filesystem::path executable_path_from_name(std::string_view prog_name) {
     return res;
 }
 
+void close_opt_fd(std::optional<int>& opt_fd) {
+    if(!opt_fd.has_value()) {
+        return;
+    }
+    const int fd = opt_fd.value();
+    opt_fd = std::nullopt;
+    const int close_st = ::close(fd);
+    if(close_st != 0) {
+        // Retry on EINTR ? (see manpage)
+        fmt::print("NPP: Got error {} while calling close(2) on file descritptor {}\n", errno, fd);
+    }
+}
+
 } // anonymous namespace
 
 
 namespace npp::detail {
 
-pipe::pipe() {
-    const int pipe_st = ::pipe(_fd);
+pipe make_pipe() {
+    int fd[2];
+    const int pipe_st = ::pipe(fd);
     if(pipe_st != 0) {
         throw std::runtime_error(fmt::format("Got error {} while calling pipe(2)", errno));
     }
+    return pipe(fd[0], fd[1]);
 }
 
-template <int FdIdx>
-requires(FdIdx == 0 || FdIdx == 1)
-void pipe::close_fd() {
-    if(_fd[FdIdx] == 0) {
-        return;
-    }
-    const int close_st = ::close(_fd[FdIdx]);
-    _fd[FdIdx] = 0;
-    if(close_st != 0) {
-        // Retry on EINTR ? (see manpage)
-        fmt::print("NPP: Got error {} while calling close(2) on file descritptor {}\n", errno, _fd[FdIdx]);
-    }
-}
+void pipe::close_read()  { ::close_opt_fd(_read_fd);  }
+void pipe::close_write() { ::close_opt_fd(_write_fd); }
 
 } // namespace npp::detail
 
@@ -117,7 +121,7 @@ subprocess subprocess::spawn(std::string_view prog_name, program_args& args) {
     args.set_executable(prog_name);
     const std::filesystem::path exec_path = ::executable_path_from_name(prog_name);
 
-    detail::pipe ret_pipe;
+    detail::pipe ret_pipe = detail::make_pipe();
 
     const pid_t pid = vfork();
     if(pid == -1) {

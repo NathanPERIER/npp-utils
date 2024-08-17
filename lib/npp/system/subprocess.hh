@@ -18,19 +18,19 @@ namespace npp::detail {
 class pipe {
 
 public:
-    pipe();
+    pipe(): _read_fd(std::nullopt), _write_fd(std::nullopt) {}
 
     pipe(const pipe&) = delete;
     pipe& operator=(const pipe&) = delete;
 
-    std::optional<int> read_fd()  const { return get_fd<0>(); }
-    std::optional<int> write_fd() const { return get_fd<1>(); }
+    std::optional<int> read_fd()  const { return _read_fd;  }
+    std::optional<int> write_fd() const { return _write_fd; }
 
-    void close_read()  { return close_fd<0>(); }
-    void close_write() { return close_fd<1>(); }
+    void close_read();
+    void close_write();
 
     /// @brief used to create a copy of the file descriptors when forking with shared memory
-    pipe share() { return pipe(_fd); }
+    pipe share() { return pipe(_read_fd, _write_fd); }
 
     void close() {
         close_read();
@@ -40,20 +40,15 @@ public:
     ~pipe() { close(); }
 
 private:
-    int _fd[2];
+    std::optional<int> _read_fd;
+    std::optional<int> _write_fd;
 
-    pipe(const int fd[2]): _fd{ fd[0], fd[1] } {}
+    pipe(std::optional<int> read_fd, std::optional<int> write_fd): _read_fd(read_fd), _write_fd(write_fd) {}
 
-    template <int FdIdx>
-    requires(FdIdx == 0 || FdIdx == 1)
-    std::optional<int> get_fd() const {
-        return _fd[FdIdx] == 0 ? std::nullopt : std::optional(_fd[FdIdx]);
-    }
-
-    template <int FdIdx>
-    requires(FdIdx == 0 || FdIdx == 1)
-    void close_fd();
+    friend pipe make_pipe();
 };
+
+pipe make_pipe();
 
 } // namespace npp::detail
 
