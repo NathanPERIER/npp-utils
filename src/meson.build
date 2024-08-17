@@ -11,7 +11,8 @@ sources = [
 	'string/diff.cc',
 	'string/lexer.cc',
 	'system/errno.cc',
-	'system/path.cc'
+	'system/path.cc',
+	'system/subprocess.cc'
 ]
 
 headers = [
