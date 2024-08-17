@@ -3,6 +3,7 @@
 #include <vector>
 
 #include <fmt/format.h>
+#include <fmt/color.h>
 
 #include "npp/error.hh"
 #include "npp/string/split.hh"
@@ -205,9 +206,9 @@ bool diff(std::string_view original, std::string_view edited) {
 	size_t b_idx = 0;
 	while(!path->empty()) {
 		switch(path->top()) {
-			case edit_op::keep: fmt::print(" {}\n", a[a_idx]); a_idx++; b_idx++; break;
-			case edit_op::add:  fmt::print("+{}\n", b[b_idx]);          b_idx++; break;
-			case edit_op::del:  fmt::print("-{}\n", a[a_idx]); a_idx++;          break;
+			case edit_op::keep: fmt::print(fmt::fg(fmt::terminal_color::bright_black), fmt::format("  |{}\n", a[a_idx])); a_idx++; b_idx++; break;
+			case edit_op::add:  fmt::print(fmt::fg(fmt::terminal_color::green),        fmt::format("+ |{}\n", b[b_idx]));          b_idx++; break;
+			case edit_op::del:  fmt::print(fmt::fg(fmt::terminal_color::red),          fmt::format("- |{}\n", a[a_idx])); a_idx++;          break;
 			default: npp::unreachable();
 		}
 		path->pop();
