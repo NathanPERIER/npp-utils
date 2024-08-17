@@ -13,12 +13,12 @@ class program_args {
 
 public:
     program_args(): _args() {}
-    program_args(std::initializer_list<std::string> args): _args(args) {}
+    program_args(std::string executable): _executable(std::move(executable)), _args() {}
     program_args(std::string executable, std::initializer_list<std::string> args): _executable(std::move(executable)), _args(args) {}
-    program_args(int argc, char** argv, bool drop_first = true):       program_args(argc, const_cast<const char* const*>(argv), drop_first) {}
-    program_args(int argc, char* const* argv, bool drop_first = true): program_args(argc, const_cast<const char* const*>(argv), drop_first) {}
-    program_args(int argc, const char* const* argv, bool drop_first = true): _executable((drop_first && argc >= 1) ? *argv : ""), _args() {
-        for(int i = (drop_first ? 1 : 0); i < argc; i++) {
+    program_args(int argc, char** argv):       program_args(argc, const_cast<const char* const*>(argv)) {}
+    program_args(int argc, char* const* argv): program_args(argc, const_cast<const char* const*>(argv)) {}
+    program_args(int argc, const char* const* argv): _executable((argc >= 1) ? *argv : ""), _args() {
+        for(int i = 1; i < argc; i++) {
             _args.emplace_back(*(argv + i));
         }
     }
@@ -74,9 +74,13 @@ public:
     }
 
     std::string_view executable() const { return _executable; }
+    void set_executable(const std::string_view executable_name) {
+        clear_cache();
+        _executable = std::string(executable_name);
+    }
 
     size_t size() const { return _args.size(); }
-    size_t argc() const { return size();       }
+    size_t argc() const { return size() + 1;   }
 
     bool empty() const { return size() == 0; }
 
@@ -87,6 +91,7 @@ public:
             return _cache.data();
         }
 
+        _cache.push_back(_executable.data());
         for(std::string& arg: _args) {
             _cache.push_back(arg.data());
         }
