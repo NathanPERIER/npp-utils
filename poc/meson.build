@@ -1,1 +1,2 @@
 subdir('diff')
+subdir('spawn')
