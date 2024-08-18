@@ -1,55 +1,49 @@
 #include "npp/program/environ.hh"
 
-#include <cassert>
-#include <mutex>
 #include <unistd.h>
 
-#include "npp/memory/finally.hh"
-
-
-namespace {
-
-std::mutex environ_mutex;
-
-} // anonymous namespace
-
-
-namespace npp::detail {
-
-std::shared_ptr<const npp::string_map<std::string>> environment_variables_manager::operator()() {
-    ::environ_mutex.lock();
-    const auto holder = npp::finally([]() { ::environ_mutex.unlock(); });
-
-    if(_environ != nullptr) {
-        return _environ;
-    }
-
-    _environ = std::make_unique<npp::string_map<std::string>>();
-    for(char** env = ::environ; (*env) != nullptr; env++) {
-        const std::string_view entry(*env);
-        const size_t idx = entry.find('=');
-        assert(idx != std::string_view::npos);
-        _environ->insert({
-            std::string(entry.substr(0, idx)),
-            std::string((idx < entry.size() - 1) ? entry.substr(idx+1) : std::string_view())
-        });
-    }
-
-    return _environ;
-}
-
-
-void environment_variables_manager::invalidate() {
-    ::environ_mutex.lock();
-    _environ = nullptr;
-    ::environ_mutex.unlock();
-}
-
-} // namespace npp::detail
+#include <fmt/format.h>
 
 
 namespace npp {
 
-npp::detail::environment_variables_manager environ;
+program_env program_env::from_environ() {
+    return program_env(::environ);
+}
+
+std::optional<std::string_view> program_env::get(std::string_view name) const {
+    const auto it = _environ.find(name);
+    if(it == _environ.end()) {
+        return std::nullopt;
+    }
+    return it->second.first;
+}
+
+void program_env::set(std::string_view name, std::string_view value) {
+    if(name.find('=') != std::string_view::npos) {
+        throw std::runtime_error("Environment variable cannot contain the '=' symbol");
+    }
+    std::shared_ptr<std::string> entry = std::make_shared<std::string>(fmt::format("{}={}", name, value));
+    auto val = std::pair(
+        (value.size() > 0) ? std::string_view(*entry).substr(name.size()+1) : std::string_view(),
+        entry
+    );
+    auto it = _environ.find(name);
+    if(it == _environ.end()) {
+        _environ.insert({
+            std::string(name),
+            std::move(val)
+        });
+    } else {
+        it->second = std::move(val);
+    }
+}
+
+void program_env::unset(std::string_view name) {
+    const auto it = _environ.find(name);
+    if(it != _environ.end()) {
+        _environ.erase(it);
+    }
+}
 
 } // namespace npp
