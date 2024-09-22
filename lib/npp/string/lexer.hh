@@ -218,6 +218,11 @@ struct fmt::formatter<npp::lexer_token> {
         return it;
     }
 
+    template <npp::token_option Token>
+    static std::string_view simple_token_name(bool verbose, std::string_view fallback) {
+        return verbose ? npp::token_type_name<Token>() : fallback;
+    }
+
     auto format(const npp::lexer_token& tok, fmt::format_context& ctx) const -> fmt::format_context::iterator {
         struct format_visitor {
             bool verbose = verbose;
@@ -230,58 +235,58 @@ struct fmt::formatter<npp::lexer_token> {
                 return verbose ? fmt::format_to(ctx.out(), "{}({})", npp::token_type_name<npp::tokens::int_cst>(), cst.value) : fmt::format_to(ctx.out(), "{}", cst.value);
             }
             fmt::format_context::iterator operator()(const npp::tokens::plus&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::plus>()) : fmt::format_to(ctx.out(), "+");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::plus>(verbose, "+"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::minus&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::minus>()) : fmt::format_to(ctx.out(), "-");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::minus>(verbose, "-"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::mul&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::mul>()) : fmt::format_to(ctx.out(), "*");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::mul>(verbose, "*"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::div&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::div>()) : fmt::format_to(ctx.out(), "/");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::div>(verbose, "/"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::eq&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eq>()) : fmt::format_to(ctx.out(), "==");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::eq>(verbose, "=="));
             }
             fmt::format_context::iterator operator()(const npp::tokens::ne&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::ne>()) : fmt::format_to(ctx.out(), "!=");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::ne>(verbose, "!="));
             }
             fmt::format_context::iterator operator()(const npp::tokens::gt&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::gt>()) : fmt::format_to(ctx.out(), ">");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::gt>(verbose, ">"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::lt&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lt>()) : fmt::format_to(ctx.out(), "<");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::lt>(verbose, "<"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::ge&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::ge>()) : fmt::format_to(ctx.out(), ">=");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::ge>(verbose, ">="));
             }
             fmt::format_context::iterator operator()(const npp::tokens::le&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::le>()) : fmt::format_to(ctx.out(), "<=");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::le>(verbose, "<="));
             }
             fmt::format_context::iterator operator()(const npp::tokens::lparen&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lparen>()) : fmt::format_to(ctx.out(), "(");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::lparen>(verbose, "("));
             }
             fmt::format_context::iterator operator()(const npp::tokens::rparen&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rparen>()) : fmt::format_to(ctx.out(), ")");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::rparen>(verbose, ")"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::lbrack&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lbrack>()) : fmt::format_to(ctx.out(), "[");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::lbrack>(verbose, "["));
             }
             fmt::format_context::iterator operator()(const npp::tokens::rbrack&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rbrack>()) : fmt::format_to(ctx.out(), "]");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::rbrack>(verbose, "]"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::lcurl&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lcurl>()) : fmt::format_to(ctx.out(), "{{");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::lcurl>(verbose, "{"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::rcurl&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rcurl>()) : fmt::format_to(ctx.out(), "}}");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::rcurl>(verbose, "}"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::eol&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eol>()) : fmt::format_to(ctx.out(), "<eol>");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::eol>(verbose, "<eol>"));
             }
             fmt::format_context::iterator operator()(const npp::tokens::eof&) {
-                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eof>()) : fmt::format_to(ctx.out(), "<eof>");
+                return fmt::format_to(ctx.out(), "{}", simple_token_name<npp::tokens::eof>(verbose, "<eof>"));
             }
         } v;
         return std::visit(v, tok.raw());
