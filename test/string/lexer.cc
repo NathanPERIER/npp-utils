@@ -37,6 +37,17 @@ TEST_CASE("Boolean operators parsing") {
     CHECK(tokens.eof());
 }
 
+TEST_CASE("Brackets and parentheses parsing") {
+    npp::token_stream tokens = npp::tokenize("() [] {}");
+    REQUIRE(tokens.discard<npp::tokens::lparen>());
+    REQUIRE(tokens.discard<npp::tokens::rparen>());
+    REQUIRE(tokens.discard<npp::tokens::lbrack>());
+    REQUIRE(tokens.discard<npp::tokens::rbrack>());
+    REQUIRE(tokens.discard<npp::tokens::lcurl>());
+    REQUIRE(tokens.discard<npp::tokens::rcurl>());
+    CHECK(tokens.eof());
+}
+
 TEST_CASE("Identifiers parsing") {
     npp::token_stream tokens = npp::tokenize("i var x0 is_enabled _idx");
     for(std::string_view var: {"i", "var", "x0", "is_enabled", "_idx"}) {

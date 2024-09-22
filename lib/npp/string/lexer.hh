@@ -35,6 +35,14 @@ struct lt {};
 struct ge {};
 struct le {};
 
+// Brackets and parentheses
+struct lparen {};
+struct rparen {};
+struct lbrack {};
+struct rbrack {};
+struct lcurl  {};
+struct rcurl  {};
+
 // End of line
 struct eol {};
 
@@ -59,6 +67,12 @@ using token_variant = std::variant<
     tokens::lt,
     tokens::ge,
     tokens::le,
+    tokens::lparen,
+    tokens::rparen,
+    tokens::lbrack,
+    tokens::rbrack,
+    tokens::lcurl,
+    tokens::rcurl,
     tokens::eol,
     tokens::eof
 >;
@@ -244,6 +258,24 @@ struct fmt::formatter<npp::lexer_token> {
             }
             fmt::format_context::iterator operator()(const npp::tokens::le&) {
                 return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::le>()) : fmt::format_to(ctx.out(), "<=");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::lparen&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lparen>()) : fmt::format_to(ctx.out(), "(");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::rparen&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rparen>()) : fmt::format_to(ctx.out(), ")");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::lbrack&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lbrack>()) : fmt::format_to(ctx.out(), "[");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::rbrack&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rbrack>()) : fmt::format_to(ctx.out(), "]");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::lcurl&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::lcurl>()) : fmt::format_to(ctx.out(), "{{");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::rcurl&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::rcurl>()) : fmt::format_to(ctx.out(), "}}");
             }
             fmt::format_context::iterator operator()(const npp::tokens::eol&) {
                 return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eol>()) : fmt::format_to(ctx.out(), "<eol>");

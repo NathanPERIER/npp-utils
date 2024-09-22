@@ -119,6 +119,12 @@ npp::lexer_token stream_tokenizer::parse_token() {
             case '=': skip(); return npp::lexer_token(npp::tokens::ge{}, start_pos, 2);
             default:          return npp::lexer_token(npp::tokens::gt{}, start_pos, 2);
         };
+        case '(': return npp::lexer_token(npp::tokens::lparen{}, start_pos);
+        case ')': return npp::lexer_token(npp::tokens::rparen{}, start_pos);
+        case '[': return npp::lexer_token(npp::tokens::lbrack{}, start_pos);
+        case ']': return npp::lexer_token(npp::tokens::rbrack{}, start_pos);
+        case '{': return npp::lexer_token(npp::tokens::lcurl{},  start_pos);
+        case '}': return npp::lexer_token(npp::tokens::rcurl{},  start_pos);
         // TODO case '"': // parse string
     }
     if(is_digit(c)) {
