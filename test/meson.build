@@ -12,6 +12,7 @@ test_source_files = [
     'program/environ.cc',
     'string/diff.cc',
     'string/join.cc',
+    'string/lazy.cc',
     'string/lexer.cc',
     'string/split.cc',
     'system/errno.cc',
