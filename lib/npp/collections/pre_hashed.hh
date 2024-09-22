@@ -2,6 +2,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <unordered_set>
 
 #include "npp/typing/hashable.hh"
 
@@ -74,6 +75,9 @@ namespace npp {
 
 template <hashable Hashable, class T, class KeyEqual=std::equal_to<Hashable>>
 using prehash_umap = std::unordered_map<npp::pre_hashed<Hashable>, T, npp::detail::pre_hash_helper<Hashable>, npp::detail::pre_hash_eq_helper<Hashable, KeyEqual>>;
+
+template <hashable Hashable, class KeyEqual=std::equal_to<Hashable>>
+using prehash_uset = std::unordered_set<npp::pre_hashed<Hashable>, npp::detail::pre_hash_helper<Hashable>, npp::detail::pre_hash_eq_helper<Hashable, KeyEqual>>;
 
 } // namespace npp
 
