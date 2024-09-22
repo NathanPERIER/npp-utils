@@ -2,6 +2,7 @@
 test_source_files = [
     'hexdump.cc',
     'type_name.cc',
+    'collections/pre_hashed.cc',
     'conv/integer.cc',
     'format/csv.cc',
     'math/fraction.cc',
