@@ -35,6 +35,9 @@ struct lt {};
 struct ge {};
 struct le {};
 
+// End of line
+struct eol {};
+
 // End of file
 struct eof {};
 
@@ -56,6 +59,7 @@ using token_variant = std::variant<
     tokens::lt,
     tokens::ge,
     tokens::le,
+    tokens::eol,
     tokens::eof
 >;
 
@@ -173,12 +177,12 @@ private:
 
     void push(lexer_token tok) { _tokens.push(std::move(tok)); }
 
-    friend token_stream tokenize(std::string data);
+    friend token_stream tokenize(std::string data, bool newline);
 
 };
 
 
-token_stream tokenize(std::string data);
+token_stream tokenize(std::string data, bool newline = false);
 
 
 } // namespace npp
@@ -240,6 +244,9 @@ struct fmt::formatter<npp::lexer_token> {
             }
             fmt::format_context::iterator operator()(const npp::tokens::le&) {
                 return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::le>()) : fmt::format_to(ctx.out(), "<=");
+            }
+            fmt::format_context::iterator operator()(const npp::tokens::eol&) {
+                return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eol>()) : fmt::format_to(ctx.out(), "<eol>");
             }
             fmt::format_context::iterator operator()(const npp::tokens::eof&) {
                 return verbose ? fmt::format_to(ctx.out(), "{}", npp::token_type_name<npp::tokens::eof>()) : fmt::format_to(ctx.out(), "<eof>");

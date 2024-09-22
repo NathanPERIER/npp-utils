@@ -59,6 +59,14 @@ public:
         }
     }
 
+    void skip_spaces_until_eol() {
+        static constexpr std::string_view skip_chars = " \t\r";
+        while(_pos.idx < _data.size() && skip_chars.find(_data[_pos.idx]) != std::string_view::npos) {
+            _pos.chr++;
+            _pos.idx++;
+        }
+    }
+
     std::string_view substr(size_t start_idx) const {
         if(start_idx >= _pos.idx) {
             throw std::runtime_error(fmt::format("Bad substring range [{}:{}]", start_idx, _pos.idx));
@@ -127,12 +135,20 @@ npp::lexer_token stream_tokenizer::parse_token() {
 
 namespace npp {
 
-token_stream tokenize(std::string buf) {
+token_stream tokenize(std::string buf, bool newline) {
     token_stream tokens(std::move(buf));
     ::stream_tokenizer tokenizer(*tokens._buffer);
 
     while(true) {
-        tokenizer.skip_spaces();
+        if(newline) {
+            tokenizer.skip_spaces_until_eol();
+            if(!tokenizer.eof() && tokenizer.peek() == '\n') {
+                tokens.push(lexer_token(tokens::eol{}, tokenizer.pos()));
+                tokenizer.skip_spaces();
+            }
+        } else {
+            tokenizer.skip_spaces();
+        }
         if(tokenizer.eof()) {
             tokens.push(lexer_token(tokens::eof{}, tokenizer.pos()));
             break;

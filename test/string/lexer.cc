@@ -56,3 +56,26 @@ TEST_CASE("Integer constants parsing") {
     }
     CHECK(tokens.eof());
 }
+
+TEST_CASE("Skip EOL") {
+    npp::token_stream tokens = npp::tokenize("+ \n - ", false);
+    REQUIRE(tokens.discard<npp::tokens::plus>());
+    REQUIRE(tokens.discard<npp::tokens::minus>());
+    CHECK(tokens.eof());
+}
+
+TEST_CASE("Parse single EOL") {
+    npp::token_stream tokens = npp::tokenize("+ \n - ", true);
+    REQUIRE(tokens.discard<npp::tokens::plus>());
+    REQUIRE(tokens.discard<npp::tokens::eol>());
+    REQUIRE(tokens.discard<npp::tokens::minus>());
+    CHECK(tokens.eof());
+}
+
+TEST_CASE("Parse multiple consecutive EOL") {
+    npp::token_stream tokens = npp::tokenize("+ \n\n \n -", true);
+    REQUIRE(tokens.discard<npp::tokens::plus>());
+    REQUIRE(tokens.discard<npp::tokens::eol>());
+    REQUIRE(tokens.discard<npp::tokens::minus>());
+    CHECK(tokens.eof());
+}
