@@ -7,6 +7,7 @@ test_source_files = [
     'format/csv.cc',
     'math/fraction.cc',
     'math/interval.cc',
+    'math/vec2.cc',
     'memory/copy_ptr.cc',
     'memory/finally.cc',
     'program/arguments.cc',
