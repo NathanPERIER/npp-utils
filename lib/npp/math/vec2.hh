@@ -2,6 +2,7 @@
 #pragma once
 
 #include "npp/math/algebraic_ring.hh"
+#include "npp/typing/operators.hh"
 
 
 namespace npp {
@@ -41,5 +42,23 @@ public:
         return (x == v.x) && (y == v.y);
     }
 };
+
+template <algebraic_ring Ring>
+requires(consistent_substraction<typename Ring::element_type>)
+vec2<Ring> operator-(const vec2<Ring>& v1, const vec2<Ring>& v2) {
+    return vec2<Ring>(v1.x - v2.x, v1.y - v2.y);
+}
+
+template <algebraic_ring Ring>
+requires(consistent_substraction<typename Ring::element_type>)
+vec2<Ring> operator-(const vec2<Ring>& v, const typename Ring::element_type& e) {
+    return vec2<Ring>(v.x - e, v.y - e);
+}
+
+template <algebraic_ring Ring>
+requires(consistent_division<typename Ring::element_type>)
+vec2<Ring> operator/(const vec2<Ring>& v, const typename Ring::element_type& e) {
+    return vec2<Ring>(v.x / e, v.y / e);
+}
 
 } // namespace npp

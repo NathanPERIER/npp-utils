@@ -20,6 +20,18 @@ TEST_CASE("Integer vector multiplication") {
     CHECK(0 == (v1 * v2));
 }
 
+TEST_CASE("Integer vector substraction") {
+    const npp::vec2<npp::N> v1(5, 3);
+    const npp::vec2<npp::N> v2(8, 7);
+    CHECK(npp::vec2<npp::N>(4, 2) == (v1 - 1));
+    CHECK(npp::vec2<npp::N>(-3, -4) == (v1 - v2));
+}
+
+TEST_CASE("Integer vector division") {
+    const npp::vec2<npp::N> v(6, 9);
+    CHECK(npp::vec2<npp::N>(2, 3) == (v / 3));
+}
+
 TEST_CASE("Real vector addition") {
     const npp::vec2<npp::R> v1(0.6, 1.2);
     const npp::vec2<npp::R> v2(4.5, -1.0);
