@@ -15,7 +15,7 @@ public:
 
     vec2(element_type x, element_type y): x(x), y(y) {}
 
-    static vec2<Ring> origin() {
+    static vec2<Ring> zero() {
         return vec2(Ring::zero(), Ring::zero());
     }
 
