@@ -5,6 +5,7 @@ test_source_files = [
     'collections/pre_hashed.cc',
     'conv/integer.cc',
     'format/csv.cc',
+    'math/complex.cc',
     'math/fraction.cc',
     'math/interval.cc',
     'math/vec2.cc',
