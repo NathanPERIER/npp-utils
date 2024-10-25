@@ -35,8 +35,16 @@ TEST_CASE("Complex multiplication") {
 }
 
 TEST_CASE("Complex division") {
-    const npp::complex c = npp::complex(6, 5) / npp::complex(1, 3);
-    CHECK_THAT(c.re(), Catch::Matchers::WithinAbs(2.1, 0.001)); CHECK_THAT(c.im(), Catch::Matchers::WithinAbs(1.3, 0.001));
+    const npp::complex c1 = npp::complex(6, 5) / npp::complex(1, 3);
+    const npp::complex c2 = npp::complex(2, 5) / 4;
+    CHECK_THAT(c1.re(), Catch::Matchers::WithinAbs(2.1, 0.001)); CHECK_THAT(c1.im(), Catch::Matchers::WithinAbs(-1.3, 0.001));
+    CHECK_THAT(c2.re(), Catch::Matchers::WithinAbs(0.5, 0.001)); CHECK_THAT(c2.im(), Catch::Matchers::WithinAbs(1.25, 0.001));
+    CHECK_THROWS(npp::complex(1, 2) / 0);
+    CHECK_THROWS(npp::complex(0, 0) / 0);
+    CHECK_THROWS(npp::complex(1, 2) / npp::complex(0.0, 0.0));
+    CHECK_THROWS(npp::complex(1, 2) / npp::complex(-0.0, 0.0));
+    CHECK_THROWS(npp::complex(1, 2) / npp::complex(0.0, -0.0));
+    CHECK_THROWS(npp::complex(1, 2) / npp::complex(-0.0, -0.0));
 }
 
 TEST_CASE("Complex polar form") {

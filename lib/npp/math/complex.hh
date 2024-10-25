@@ -56,13 +56,19 @@ public:
         // = ((a + ib)(c - id)) / ((c + id)(c - id))
         // = (ac + bd + i(bc - ad)) / (c² + d²)
         // = ((ac + bd)/(c² + d²)) + i((bc - ad)/(c² + d²))
+        if(c._imaginary == 0) {
+            if(c._real == 0) {
+                throw std::domain_error("complex division by zero");
+            }
+            return complex(_real / c._real, _imaginary / c._real);
+        }
         const double den = c._real * c._real + c._imaginary * c._imaginary;
         if(den == 0) {
             throw std::domain_error("complex division by zero");
         }
         return complex(
             (_real * c._real + _imaginary * c._imaginary) / den,
-            (_real * c._imaginary - _imaginary * c._real) / den
+            (_imaginary * c._real - _real * c._imaginary) / den
         );
     }
 
@@ -139,6 +145,12 @@ struct fmt::formatter<npp::complex> {
     }
 
     auto format(const npp::complex& c, fmt::format_context& ctx) const -> fmt::format_context::iterator {
+        if(c.im() == 0) {
+            return fmt::format_to(ctx.out(), "{}", c.re());
+        }
+        if(c.re() == 0) {
+            return fmt::format_to(ctx.out(), "{}i", c.im());
+        }
         if(c.im() < 0) {
             return fmt::format_to(ctx.out(), "{} - {}i", c.re(), -1 * c.im());
         }
