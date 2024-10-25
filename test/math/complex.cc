@@ -63,6 +63,11 @@ TEST_CASE("Complex argument") {
     CHECK_THAT(npp::complex(0, -2).argument(), Catch::Matchers::WithinAbs(-1 * M_PI/2, 0.001));
 }
 
+TEST_CASE("Complex conjugate") {
+    const npp::complex c = npp::complex(6, 9).conjugate();
+    CHECK_THAT(c.re(), Catch::Matchers::WithinAbs(6.0, 0.001)); CHECK_THAT(c.im(), Catch::Matchers::WithinAbs(-9.0, 0.001));
+}
+
 TEST_CASE("Complex to vector") {
     const npp::complex c(1, 2);
     CHECK(npp::vec2<npp::R>(1, 2) == c.vec());

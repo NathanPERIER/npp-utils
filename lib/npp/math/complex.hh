@@ -30,6 +30,8 @@ public:
     double modulus() const { return std::sqrt(_real * _real + _imaginary * _imaginary); }
     double argument() const { return std::atan2(_imaginary, _real); }
 
+    constexpr complex conjugate() const { return complex(_real, -1 * _imaginary); }
+
     vec2<R> vec() const { return vec2<R>(_real, _imaginary); }
 
 
