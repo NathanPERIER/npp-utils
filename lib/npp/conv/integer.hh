@@ -14,15 +14,6 @@ template <std::integral Integer>
 requires (!std::same_as<Integer, bool>)
 struct conversion<std::string_view, Integer> {
     Integer operator()(const std::string_view repr) const {
-        if(std::is_same_v<bool, Integer>) {
-            if(repr == "true") {
-                return true;
-            }
-            if(repr == "false") {
-                return false;
-            }
-            throw std::runtime_error("Bad boolean");
-        }
         Integer res;
         const std::from_chars_result conv_ret = std::from_chars(repr.begin(), repr.end(), res);
         if(conv_ret.ec != std::errc{} || conv_ret.ptr != repr.end()) {
