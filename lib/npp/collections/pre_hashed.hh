@@ -13,24 +13,24 @@
 
 namespace npp {
 
-template <npp::hashable Hashable>
+template <typename T, class Hash=std::hash<T>>
+requires (npp::hashable<T, Hash>)
 class pre_hashed {
 
 public:
     template <typename... Args>
-    static pre_hashed<Hashable> make(Args&&... args) {
-        return pre_hashed<Hashable>(Hashable(std::forward<Args>(args)...));
+    static pre_hashed<T, Hash> make(Args&&... args) {
+        return pre_hashed<T, Hash>(T(std::forward<Args>(args)...));
     }
 
-    const Hashable& value() const { return _value; }
+    const T& value() const { return _value; }
     size_t hash() const { return _hash; }
 
-
 private:
-    Hashable _value;
+    T _value;
     size_t _hash;
 
-    pre_hashed(Hashable&& value): _value(std::forward<Hashable>(value)), _hash(std::hash<Hashable>{}(_value)) {}
+    pre_hashed(T&& value): _value(std::forward<T>(value)), _hash(Hash{}(_value)) {}
 };
 
 
@@ -41,12 +41,12 @@ struct hash_index { size_t hash; };
 
 namespace npp::detail {
 
-template <npp::hashable Hashable>
+template <class Hash, npp::hashable<Hash> Hashable>
 struct pre_hash_helper {
     size_t operator()(const Hashable& value) const {
-        return std::hash<Hashable>{}(value);
+        return Hash{}(value);
     }
-    size_t operator()(const npp::pre_hashed<Hashable>& hashed) const {
+    size_t operator()(const npp::pre_hashed<Hashable, Hash>& hashed) const {
         return hashed.hash();
     }
     size_t operator()(const npp::hash_index& index) const {
@@ -55,15 +55,15 @@ struct pre_hash_helper {
 };
 
 
-template <npp::hashable Hashable, class KeyEqual>
+template <class Hash, npp::hashable<Hash> Hashable, class KeyEqual>
 struct pre_hash_eq_helper {
-    bool operator()(const npp::pre_hashed<Hashable>& h1, const npp::pre_hashed<Hashable>& h2) const {
+    bool operator()(const npp::pre_hashed<Hashable, Hash>& h1, const npp::pre_hashed<Hashable, Hash>& h2) const {
         return KeyEqual{}(h1.value(), h2.value());
     }
-    bool operator()(const npp::pre_hashed<Hashable>& h, const Hashable& v) const {
+    bool operator()(const npp::pre_hashed<Hashable, Hash>& h, const Hashable& v) const {
         return KeyEqual{}(h.value(), v);
     }
-    bool operator()(const Hashable& v, const npp::pre_hashed<Hashable>& h) const {
+    bool operator()(const Hashable& v, const npp::pre_hashed<Hashable, Hash>& h) const {
         return KeyEqual{}(h.value(), v);
     }
 };
@@ -73,19 +73,21 @@ struct pre_hash_eq_helper {
 
 namespace npp {
 
-template <hashable Hashable, class T, class KeyEqual=std::equal_to<Hashable>>
-using prehash_umap = std::unordered_map<npp::pre_hashed<Hashable>, T, npp::detail::pre_hash_helper<Hashable>, npp::detail::pre_hash_eq_helper<Hashable, KeyEqual>>;
+template <typename Hashable, class T, class Hash=std::hash<Hashable>, class KeyEqual=std::equal_to<Hashable>>
+requires (hashable<Hashable, Hash>)
+using prehash_umap = std::unordered_map<npp::pre_hashed<Hashable, Hash>, T, npp::detail::pre_hash_helper<Hash, Hashable>, npp::detail::pre_hash_eq_helper<Hash, Hashable, KeyEqual>>;
 
-template <hashable Hashable, class KeyEqual=std::equal_to<Hashable>>
-using prehash_uset = std::unordered_set<npp::pre_hashed<Hashable>, npp::detail::pre_hash_helper<Hashable>, npp::detail::pre_hash_eq_helper<Hashable, KeyEqual>>;
+template <typename Hashable, class Hash=std::hash<Hashable>, class KeyEqual=std::equal_to<Hashable>>
+requires (hashable<Hashable, Hash>)
+using prehash_uset = std::unordered_set<npp::pre_hashed<Hashable, Hash>, npp::detail::pre_hash_helper<Hash, Hashable>, npp::detail::pre_hash_eq_helper<Hash, Hashable, KeyEqual>>;
 
 } // namespace npp
 
 
 
-template <npp::hashable Hashable>
-struct std::hash<npp::pre_hashed<Hashable>> {
-    size_t operator()(const npp::pre_hashed<Hashable>& hashed) {
+template <class Hash, npp::hashable<Hash> Hashable>
+struct std::hash<npp::pre_hashed<Hashable, Hash>> {
+    size_t operator()(const npp::pre_hashed<Hashable, Hash>& hashed) {
         return hashed.hash();
     }
 };
