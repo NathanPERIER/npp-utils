@@ -4,3 +4,4 @@ nlohmann_json_dep = nlohmann_json_proj.get_variable('nlohmann_json_dep')
 
 subdir('lib')
 subdir('src')
+subdir('test')
