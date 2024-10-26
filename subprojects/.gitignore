@@ -7,4 +7,5 @@
 
 # Exceptions for wrap files
 !/fmt.wrap
+!/nlohmann_json.wrap
 !/catch2.wrap
