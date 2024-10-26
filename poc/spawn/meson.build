@@ -1,7 +1,7 @@
 
 poc_spawn_exe = executable(
     'spawn', 'main.cc',
-    dependencies: [npputils_dep],
+    dependencies: [npputils_unix_dep],
     build_by_default: true,
     install: false
 )
