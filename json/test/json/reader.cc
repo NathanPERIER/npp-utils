@@ -30,7 +30,7 @@ TEST_CASE("Basic JSON deserialization") {
     CHECK_THROWS(reader.read_opt("badval", value, 50));
 }
 
-TEST_CASE("JSON deserialization with provider method") {
+TEST_CASE("JSON deserialization with custom provider method") {
     nlohmann::json data = nlohmann::json::parse(R"__({ "message": "hello", "count": 2 })__");
     npp::json_reader reader = npp::json_reader(data);
 
@@ -46,4 +46,21 @@ TEST_CASE("JSON deserialization with provider method") {
     CHECK(value == "nb=5");
     CHECK_THROWS(reader.read_opt("count", value, default_provider));
     CHECK(value == "nb=5");
+}
+
+
+struct dummy_string_holder {
+    std::string data;
+};
+
+TEST_CASE("JSON deserialization with custom converter") {
+    nlohmann::json data = nlohmann::json::parse(R"__({ "message": "hello" })__");
+    npp::json_reader reader = npp::json_reader(data);
+
+    dummy_string_holder value;
+
+    reader.read("message", value, [](const nlohmann::json& data) {
+        return dummy_string_holder{ npp::convert_json<std::string>(data) };
+    });
+    CHECK(value.data == "hello");
 }
