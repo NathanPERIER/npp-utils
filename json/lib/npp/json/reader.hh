@@ -34,8 +34,9 @@ public:
         return *this;
     }
 
-    template <typename T, json_convert_func<Json, T> Conv> requires(std::copy_constructible<T>)
-    basic_json_reader<Json>& read_opt(std::string_view key, T& value, Conv converter, const T& default_value) {
+    template <typename T, json_convert_func<Json, T> Conv, typename V>
+    requires(std::constructible_from<T, const V&>)
+    basic_json_reader<Json>& read_opt(std::string_view key, T& value, Conv converter, const V& default_value) {
         read_internal<T, true, Conv>(key, value, std::move(converter), [&default_value]() -> T { return default_value; });
         return *this;
     }
@@ -54,8 +55,9 @@ public:
         return *this;
     }
 
-    template <json_convertible<Json> T> requires(std::copy_constructible<T>)
-    basic_json_reader<Json>& read_opt(std::string_view key, T& value, const T& default_value) {
+    template <json_convertible<Json> T, typename V>
+    requires(std::constructible_from<T, const V&>)
+    basic_json_reader<Json>& read_opt(std::string_view key, T& value, const V& default_value) {
         read_internal<T, true, std::nullptr_t>(key, value, nullptr, [&default_value]() -> T { return default_value; });
         return *this;
     }

@@ -164,10 +164,10 @@ TEST_CASE("JSON complex structure deserialization") {
     npp::json_reader(data)
         .read("name", value.name)
         .read("id",   value.id  )
-        .read_opt("val1",      value.val1,    static_cast<uint16_t>(15u)           )
-        .read_opt("val2",      value.val2,    [&val = value.val1]() { return val; })
-        .read_opt("old_val",   value.old_val                                       )
-        .read_opt("is_cold",   value.is_cold, false                                )
+        .read_opt("val1",      value.val1,    15                                        )
+        .read_opt("val2",      value.val2,    [&val = value.val1]() { return val + 12; })
+        .read_opt("old_val",   value.old_val                                            )
+        .read_opt("is_cold",   value.is_cold, false                                     )
         .recurse("some_stuff", value.some_stuff, [](npp::json_reader reader, ::stuff& some_stuff) {
             reader
                 .read_opt("food",         some_stuff.food,         ::fruit::raspberry)
@@ -198,10 +198,11 @@ TEST_CASE("JSON complex structure deserialization") {
             .real_number  = 3.14
         },
         .val1 = 42,
-        .val2 = 42,
+        .val2 = 54,
         .old_val = 12,
         .is_cold = true
     };
 
     CHECK(expected == value);
+
 }
