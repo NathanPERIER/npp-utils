@@ -25,7 +25,7 @@ meson subprojects download
 #### 3. Create the build directories
 
 ```bash
-meson setup build_debug --buildtype=debug
+meson setup build_debug --buildtype=debug -Db_sanitize=address,undefined
 meson setup build_release --buildtype=release
 ```
 
