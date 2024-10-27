@@ -61,6 +61,21 @@ public:
     }
 
 
+    template <typename T, typename RecurseFn>
+    requires(std::invocable<RecurseFn, basic_json_reader<Json>&, T&>)
+    basic_json_reader<Json>& recurse(std::string_view key, T& value, RecurseFn recursor) {
+        recurse_internal<false>(key, value, std::move(recursor));
+        return *this;
+    }
+
+    template <typename T, typename RecurseFn>
+    requires(std::invocable<RecurseFn, basic_json_reader<Json>&, T&>)
+    basic_json_reader<Json>& recurse_opt(std::string_view key, T& value, RecurseFn recursor) {
+        recurse_internal<true>(key, value, std::move(recursor));
+        return *this;
+    }
+
+
 private:
     const Json& _data;
 
@@ -82,6 +97,19 @@ private:
         } else {
             value = converter(*it);
         }
+    }
+
+    template <bool Optional, typename T, typename RecurseFn>
+    requires(std::invocable<RecurseFn, basic_json_reader<Json>&, T&>)
+    void recurse_internal(std::string_view key, T& value, RecurseFn recursor) {
+        const auto it = _data.find(key);
+        if(it == _data.end()) {
+            if constexpr (!Optional) {
+                throw std::runtime_error(fmt::format("Key {} not found", key));
+            }
+            return;
+        }
+        recursor(basic_json_reader<Json>(*it), value);
     }
 
 };
