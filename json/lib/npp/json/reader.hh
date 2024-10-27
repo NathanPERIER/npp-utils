@@ -87,6 +87,7 @@ private:
 };
 
 
-using json_reader = basic_json_reader<nlohmann::json>;
+using json_reader         = basic_json_reader<nlohmann::json>;
+using ordered_json_reader = basic_json_reader<nlohmann::ordered_json>;
 
 } // namespace npp
