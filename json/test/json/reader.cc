@@ -29,3 +29,21 @@ TEST_CASE("Basic JSON deserialization") {
     CHECK(value == 50);
     CHECK_THROWS(reader.read_opt("badval", value, 50));
 }
+
+TEST_CASE("JSON deserialization with provider method") {
+    nlohmann::json data = nlohmann::json::parse(R"__({ "message": "hello", "count": 2 })__");
+    npp::json_reader reader = npp::json_reader(data);
+
+    std::string value;
+    uint32_t number = 5;
+    auto default_provider = [&number]() -> std::string {
+        return fmt::format("nb={}", number);
+    };
+
+    reader.read_opt("message", value, default_provider);
+    CHECK(value == "hello");
+    reader.read_opt("def", value, default_provider);
+    CHECK(value == "nb=5");
+    CHECK_THROWS(reader.read_opt("count", value, default_provider));
+    CHECK(value == "nb=5");
+}
