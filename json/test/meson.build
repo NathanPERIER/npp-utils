@@ -1,5 +1,7 @@
 
 json_test_source_files = [
+    'json/convert_addons.cc',
+    'json/convert_base.cc',
     'json/reader.cc'
 ]
 

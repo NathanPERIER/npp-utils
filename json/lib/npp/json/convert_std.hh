@@ -4,7 +4,7 @@
 
 #include <filesystem>
 
-#include "npp/json/convert.hh"
+#include "npp/json/convert_base.hh"
 
 
 namespace npp {
