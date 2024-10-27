@@ -24,6 +24,26 @@ public:
         return *this;
     }
 
+    template <json_convertible<Json> JsonConvertible>
+    basic_json_reader<Json>& read_opt(std::string_view key, JsonConvertible& value) {
+        const auto it = _data.find(key);
+        if(it != _data.end()) {
+            value = json_converter<JsonConvertible>::convert(*it);
+        }
+        return *this;
+    }
+
+    template <json_convertible<Json> JsonConvertible>
+    basic_json_reader<Json>& read_opt(std::string_view key, JsonConvertible& value, const JsonConvertible& default_value) {
+        const auto it = _data.find(key);
+        if(it != _data.end()) {
+            value = json_converter<JsonConvertible>::convert(*it);
+        } else {
+            value = default_value;
+        }
+        return *this;
+    }
+
 
 private:
     const Json& _data;
