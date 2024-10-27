@@ -6,6 +6,6 @@
 
 TEST_CASE("Basic JSON conversion") {
     nlohmann::json data = nlohmann::json::parse("80");
-    int value = npp::json_converter<int>::convert(data);
+    int value = npp::convert_json<int>(data);
     CHECK(value == 80);
 }

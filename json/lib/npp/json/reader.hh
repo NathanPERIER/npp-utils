@@ -20,7 +20,7 @@ public:
         if(it == _data.end()) {
             throw std::runtime_error(fmt::format("Key {} not found", key));
         }
-        value = json_converter<JsonConvertible>::convert(*it);
+        value = npp::convert_json<JsonConvertible>(*it);
         return *this;
     }
 
@@ -28,7 +28,7 @@ public:
     basic_json_reader<Json>& read_opt(std::string_view key, JsonConvertible& value) {
         const auto it = _data.find(key);
         if(it != _data.end()) {
-            value = json_converter<JsonConvertible>::convert(*it);
+            value = npp::convert_json<JsonConvertible>(*it);
         }
         return *this;
     }
@@ -37,7 +37,7 @@ public:
     basic_json_reader<Json>& read_opt(std::string_view key, JsonConvertible& value, const JsonConvertible& default_value) {
         const auto it = _data.find(key);
         if(it != _data.end()) {
-            value = json_converter<JsonConvertible>::convert(*it);
+            value = npp::convert_json<JsonConvertible>(*it);
         } else {
             value = default_value;
         }

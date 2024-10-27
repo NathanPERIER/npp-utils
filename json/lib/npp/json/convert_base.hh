@@ -27,4 +27,9 @@ concept json_convertible = npp::json<Json> && requires(const Json& data) {
     { json_converter<T>::convert(data) } -> std::convertible_to<T>;
 };
 
+template <typename T, npp::json Json> requires(json_convertible<T, Json>)
+T convert_json(const Json& data) {
+    return json_converter<T>::convert(data);
+}
+
 } // namespace npp
