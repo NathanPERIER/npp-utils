@@ -3,6 +3,7 @@ core_test_source_files = [
     'hexdump.cc',
     'type_name.cc',
     'collections/pre_hashed.cc',
+    'colour/rgba.cc',
     'conv/integer.cc',
     'format/csv.cc',
     'math/complex.cc',
