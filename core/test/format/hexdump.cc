@@ -3,7 +3,7 @@
 
 #include <catch2/catch_test_macros.hpp>
 
-#include <npp/hexdump.hh>
+#include <npp/format/hexdump.hh>
 
 
 TEST_CASE("Simple hex dump") {

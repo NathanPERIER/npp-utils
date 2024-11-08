@@ -1,11 +1,11 @@
 
 core_test_source_files = [
-    'hexdump.cc',
     'type_name.cc',
     'collections/pre_hashed.cc',
     'colour/rgba.cc',
     'conv/integer.cc',
     'format/csv.cc',
+    'format/hexdump.cc',
     'math/complex.cc',
     'math/fraction.cc',
     'math/interval.cc',
