@@ -1,4 +1,4 @@
-#include "npp/colour/rgba.hh"
+#include "npp/colour/rgb.hh"
 
 #include <stdexcept>
 
@@ -46,6 +46,20 @@ rgba rgba::parse(std::string_view repr) {
         res.a = 0xff;
     }
     return res;
+}
+
+rgb rgb::parse(std::string_view repr) {
+    if(repr.starts_with('#')) {
+        repr = repr.substr(1);
+    }
+    if(repr.size() != 6) {
+        throw std::runtime_error("Bad RGBA string length");
+    }
+    return {
+        .r = ::parse_byte<0>(repr),
+        .g = ::parse_byte<1>(repr),
+        .b = ::parse_byte<2>(repr),
+    };
 }
 
 } // namespace npp

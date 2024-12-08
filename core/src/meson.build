@@ -1,6 +1,6 @@
 
 npputils_core_sources = [
-	'colour/rgba.cc',
+	'colour/rgb.cc',
 	'string/diff.cc'
 ]
 
