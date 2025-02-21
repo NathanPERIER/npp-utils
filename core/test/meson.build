@@ -8,6 +8,7 @@ core_test_source_files = [
     'format/base64.cc',
     'format/csv.cc',
     'format/hexdump.cc',
+    'format/ifprint.cc',
     'math/complex.cc',
     'math/fraction.cc',
     'math/interval.cc',
