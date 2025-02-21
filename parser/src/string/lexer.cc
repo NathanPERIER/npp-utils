@@ -1,5 +1,7 @@
 #include "npp/string/lexer.hh"
 
+#include "npp/format/ifprint.hh"
+
 
 namespace {
 
@@ -133,7 +135,7 @@ npp::lexer_token stream_tokenizer::parse_token() {
     if(is_letter(c) || c == '_') {
         return parse_identifier(*this, start_pos);
     }
-    throw std::runtime_error(fmt::format("Unexpected character '{}'", c));
+    throw std::runtime_error(fmt::format("Unexpected character {}", npp::char_ifprint{c}));
 }
 
 } // anonymous namespace
