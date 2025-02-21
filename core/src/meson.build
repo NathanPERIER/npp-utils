@@ -3,6 +3,7 @@ npputils_core_sources = [
 	'colour/conv.cc',
 	'colour/rgb.cc',
 	'format/base64.cc',
+	'format/templater.cc',
 	'io/file.cc',
 	'string/diff.cc'
 ]
