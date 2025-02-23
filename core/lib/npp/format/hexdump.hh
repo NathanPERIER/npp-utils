@@ -1,9 +1,10 @@
 
 #pragma once
 
+#include <concepts>
 #include <iostream>
 #include <string_view>
-#include <concepts>
+#include <vector>
 
 
 namespace npp {
@@ -51,7 +52,21 @@ inline void hexdump(const uint8_t* buf, const uint64_t len) {
 }
 
 
-std::vector<uint8_t> load_hex(std::string_view hex, bool with_prefix = false) {
+inline uint8_t load_hex_byte(char hb, char lb) {
+    static const auto convert_hex_char = [](char c) -> uint8_t {
+        if('0' <= c && c <= '9') {
+            return static_cast<uint8_t>(c - '0');
+        }
+        if('a' <= c && c <= 'f') {
+            return static_cast<uint8_t>(c - 'a' + 10);
+        }
+        throw std::runtime_error("Bad hexadecimal character");
+    };
+
+    return ((convert_hex_char(hb) << 4) | convert_hex_char(lb));
+}
+
+inline std::vector<uint8_t> load_hex(std::string_view hex, bool with_prefix = false) {
     size_t i = 0;
     if(hex.size() >= 2 && with_prefix && hex[0] == '0' && hex[1] == 'x') {
         i = 2;
@@ -60,20 +75,10 @@ std::vector<uint8_t> load_hex(std::string_view hex, bool with_prefix = false) {
         throw std::runtime_error("Bad hexadecimal string size");
     }
 
-    static const auto convert_hex_char = [](char c) -> uint8_t {
-        if('0' <= c && c <= '9') {
-            return static_cast<uint8_t>(c - '0');
-        }
-        if('a' <= c && c <= 'f') {
-            return static_cast<uint8_t>(c - 'a');
-        }
-        throw std::runtime_error("Bad hexadecimal character");
-    };
-
     std::vector<uint8_t> res;
     res.reserve((hex.size() - i) / 2);
     for(; i < hex.size(); i += 2) {
-        res.push_back((convert_hex_char(hex[i]) << 4) | convert_hex_char(hex[i+1]));
+        res.push_back(load_hex_byte(hex[i], hex[i+1]));
     }
 
     return res;
