@@ -90,12 +90,11 @@ void escape_sequence_at(std::string_view buf, size_t& pos, std::string& res) {
     }
 }
 
-} // anonymous namespace
+template <typename T>
+concept string_mapper = std::invocable<T, std::string_view> && std::invocable<T, std::string>;
 
-
-namespace npp {
-
-npp::lazy_string parse_json_string_lazy(std::string_view buf, size_t pos) {
+template <string_mapper M>
+std::invoke_result_t<M, std::string_view> parse_json_string_impl(std::string_view buf, size_t pos, M mapper) {
     if(pos >= buf.size()) {
         throw std::runtime_error("JSON string parsing starts outside the provided buffer");
     }
@@ -112,8 +111,8 @@ npp::lazy_string parse_json_string_lazy(std::string_view buf, size_t pos) {
         }
         switch(buf[pos]) {
             case '\\': {
-                if(pos - 1 > begin) {
-                    res.append(buf.substr(begin, begin-pos-1));
+                if(pos > begin) {
+                    res.append(buf.substr(begin, pos - begin));
                 }
                 pos++;
                 ::escape_sequence_at(buf, pos, res);
@@ -121,18 +120,40 @@ npp::lazy_string parse_json_string_lazy(std::string_view buf, size_t pos) {
                 break;
             }
             case '"' : {
+                const std::string_view last_piece = buf.substr(begin, pos - begin);
                 if(res.empty()) {
-                    return buf.substr(begin, begin-pos);
+                    return mapper(last_piece);
                 }
-                if(pos - 1 > begin) {
-                    res.append(buf.substr(begin, begin-pos-1));
+                if(!last_piece.empty()) {
+                    res.append(last_piece);
                 }
-                return res;
+                return mapper(std::move(res));
             }
         }
         pos++;
     }
     throw std::runtime_error("JSON string ends too early");
+}
+
+} // anonymous namespace
+
+
+namespace npp {
+
+std::string parse_json_string(std::string_view buf, size_t pos) {
+    struct map_to_string {
+        std::string operator()(std::string s) { return s; }
+        std::string operator()(std::string_view sv) { return std::string(sv); }
+    };
+    return ::parse_json_string_impl(buf, pos, map_to_string{});
+}
+
+npp::lazy_string parse_json_string_lazy(std::string_view buf, size_t pos) {
+    struct map_to_lazy_string {
+        npp::lazy_string operator()(std::string s) { return npp::lazy_string(std::move(s)); }
+        npp::lazy_string operator()(std::string_view sv) { return sv; }
+    };
+    return ::parse_json_string_impl(buf, pos, map_to_lazy_string{});
 }
 
 } // namespace npp
