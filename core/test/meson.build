@@ -6,6 +6,7 @@ core_test_source_files = [
     'colour/rgb.cc',
     'conv/integer.cc',
     'format/base64.cc',
+    'format/base85.cc',
     'format/csv.cc',
     'format/hexdump.cc',
     'format/ifprint.cc',
