@@ -6,6 +6,7 @@ npputils_core_sources = [
 	'format/json_string.cc',
 	'format/templater.cc',
 	'io/file.cc',
+	'math/bitwise.cc',
 	'string/diff.cc'
 ]
 
