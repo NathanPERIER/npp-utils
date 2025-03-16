@@ -11,6 +11,7 @@ core_test_source_files = [
     'format/ifprint.cc',
     'format/json_string.cc',
     'format/templater.cc',
+    'math/bitwise.cc',
     'math/complex.cc',
     'math/fraction.cc',
     'math/interval.cc',
