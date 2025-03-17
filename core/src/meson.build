@@ -1,5 +1,6 @@
 
 npputils_core_sources = [
+    'algorithm/apriori.cc',
 	'colour/conv.cc',
 	'colour/rgb.cc',
 	'format/base64.cc',

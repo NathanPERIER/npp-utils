@@ -1,6 +1,7 @@
 
 core_test_source_files = [
     'type_name.cc',
+    'algorithm/apriori.cc',
     'collections/observable.cc',
     'collections/pre_hashed.cc',
     'colour/conv.cc',
