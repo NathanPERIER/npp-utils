@@ -102,15 +102,23 @@ namespace npp {
 std::vector<std::set<uint64_t>> apriori(const std::vector<std::set<uint64_t>>& itemsets, uint64_t threshold) {
     std::vector<std::set<uint64_t>> res;
     std::size_t k = 1;
+    std::vector<bool> useful(itemsets.size(), true);
+    std::vector<bool> actually_used;
     std::set<std::set<uint64_t>> k_itemsets = ::generate_one_itemsets(itemsets, threshold);
     while(!k_itemsets.empty()) {
         res.insert(res.end(), k_itemsets.begin(), k_itemsets.end());
         k_itemsets = ::generate_candidates(k, k_itemsets);
         k++;
+        actually_used.assign(itemsets.size(), false);
         for(auto items_it = k_itemsets.begin(); items_it != k_itemsets.end();) {
             std::size_t count = 0;
-            for(const std::set<uint64_t>& input_items: itemsets) {
+            for(std::size_t i = 0; i < itemsets.size(); i++) {
+                if(!useful[i]) {
+                    continue;
+                }
+                const std::set<uint64_t>& input_items = itemsets[i];
                 if(std::includes(input_items.begin(), input_items.end(), items_it->begin(), items_it->end())) {
+                    actually_used[i] = true;
                     count++;
                 }
             }
@@ -122,6 +130,7 @@ std::vector<std::set<uint64_t>> apriori(const std::vector<std::set<uint64_t>>& i
             items_it++;
             k_itemsets.erase(rem_it); // This works because we are working with sets
         }
+        useful = actually_used;
     }
     return res;
 }
