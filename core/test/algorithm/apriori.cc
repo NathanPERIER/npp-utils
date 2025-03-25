@@ -15,8 +15,8 @@ bool sort_itemsets(const std::set<T>& s1, const std::set<T>& s2) {
 }
 
 
-TEST_CASE("Apriori test") {
-    const std::vector<std::set<size_t>> data = {
+TEST_CASE("Apriori integral test") {
+    const std::vector<std::set<uint64_t>> data = {
         { 1, 2, 4 },
         { 1, 2, 5, 7 },
         { 1, 2, 5, 8, 3 },
@@ -28,7 +28,7 @@ TEST_CASE("Apriori test") {
         { 1, 7, 9, 2, 5 },
         { 65536 }
     };
-    const std::vector<std::set<size_t>> expected = {
+    const std::vector<std::set<uint64_t>> expected = {
         { 1 },
         { 2 },
         { 3 },
@@ -41,7 +41,36 @@ TEST_CASE("Apriori test") {
         { 1, 2, 5 }
     };
     // Get the itemsets with at least 40% of occurence
-    std::vector<std::set<size_t>> res = npp::apriori(data, data.size() * 2 / 5);
+    std::vector<std::set<uint64_t>> res = npp::apriori(data, data.size() * 2 / 5);
     std::sort(res.begin(), res.end(), sort_itemsets<uint64_t>);
+    CHECK(expected == res);
+}
+
+
+TEST_CASE("Apriori string test") {
+    const std::vector<std::set<std::string>> data = {
+        { "a", "b", "c" },
+        { "a", "b", "d" },
+        { "a", "c", "e" },
+        { "a", "d" },
+        { "a", "c", "f" },
+        { "a", "b", "d", "e" },
+        { "a", "b", "d", "f" },
+        { "a", "b", "d" },
+        { "g", "l" }
+    };
+    const std::vector<std::set<std::string>> expected = {
+        { "a" },
+        { "b" },
+        { "c" },
+        { "d" },
+        { "a", "b" },
+        { "a", "c" },
+        { "a", "d" },
+        { "b", "d" },
+        { "a", "b", "d" }
+    };
+    std::vector<std::set<std::string>> res = npp::apriori(data, data.size() / 3);
+    std::sort(res.begin(), res.end(), sort_itemsets<std::string>);
     CHECK(expected == res);
 }
