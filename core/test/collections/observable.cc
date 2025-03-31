@@ -126,3 +126,29 @@ TEST_CASE("Abort transaction") {
     obs.commit_changes();
     CHECK(*obs == initial_value);
 }
+
+TEST_CASE("Check edit with comparable struct") {
+    struct editable {
+        uint32_t i = 0;
+
+        bool operator==(const editable&) const = default;
+    };
+    npp::observable<editable> obs = npp::observable<editable>::make();
+    CHECK(obs->i == 0);
+    CHECK(!obs.has_changes());
+    obs.working_copy()->i = 0;
+    CHECK(!obs.has_changes());
+}
+
+TEST_CASE("Check edit with uncomparable struct") {
+    struct editable {
+        uint32_t i = 0;
+
+        bool operator==(const editable&) const = delete;
+    };
+    npp::observable<editable> obs = npp::observable<editable>::make();
+    CHECK(obs->i == 0);
+    CHECK(!obs.has_changes());
+    obs.working_copy()->i = 0;
+    CHECK(obs.has_changes());
+}

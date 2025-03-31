@@ -120,8 +120,18 @@ public:
         _working_copy = nullptr;
     }
 
-    void commit_changes() {
+    bool has_changes() const {
         if(_working_copy == nullptr) {
+            return false;
+        }
+        if constexpr (std::equality_comparable<T>) {
+            return (*_working_copy != *_value);
+        }
+        return true;
+    }
+
+    void commit_changes() {
+        if(!has_changes()) {
             return;
         }
         *_value = std::move(*_working_copy);
