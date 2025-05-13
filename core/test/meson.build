@@ -22,6 +22,7 @@ core_test_source_files = [
     'memory/finally.cc',
     'program/arguments.cc',
     'string/diff.cc',
+    'string/enum.cc',
     'string/join.cc',
     'string/lazy.cc',
     'string/split.cc',
