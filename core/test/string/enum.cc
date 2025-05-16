@@ -19,49 +19,26 @@ enum class bird {
 
 
 template <>
-struct fmt::formatter<bird> {
-    constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
-        auto it = ctx.begin();
-        if (it != ctx.end() && *it != '}') {
-            throw fmt::format_error("invalid bird format");
-        }
-        return it;
-    }
+struct npp::enum_serialiser<::bird> {
+    static const std::unordered_map<::bird, std::string> mapping;
+};
 
-    auto format(bird b, fmt::format_context& ctx) const -> fmt::format_context::iterator {
-        switch(b) {
-            case bird::crow:   return fmt::format_to(ctx.out(), "Crow");
-            case bird::magpie: return fmt::format_to(ctx.out(), "Magpie");
-            case bird::robin:  return fmt::format_to(ctx.out(), "Robin");
-            case bird::owl:    return fmt::format_to(ctx.out(), "Owl");
-            case bird::tern:   return fmt::format_to(ctx.out(), "Tern");
-        }
-        throw npp::unreachable();
-    }
+const std::unordered_map<::bird, std::string> npp::enum_serialiser<::bird>::mapping = {
+    { ::bird::crow,   "Crow"   },
+    { ::bird::magpie, "Magpie" },
+    { ::bird::robin,  "Robin"  },
+    { ::bird::owl,    "Owl"    },
+    { ::bird::tern,   "Tern"   }
 };
 
 
-TEST_CASE("Simple deserialisation") {
-    const npp::enum_parser<bird> parser = {
-        bird::crow,
-        bird::magpie,
-        bird::robin,
-        bird::owl,
-        bird::tern
-    };
-    CHECK(parser.parse("Owl") == bird::owl);
-    CHECK(!parser.parse("Peacock").has_value());
+TEST_CASE("Simple serialisation") {
+    CHECK(fmt::format("{}", ::bird::crow) == "Crow");
 }
 
-TEST_CASE("Bad deserializer instanciation") {
-    CHECK_THROWS(npp::enum_parser<bird>({
-        bird::crow,
-        bird::magpie,
-        bird::robin,
-        bird::robin,
-        bird::owl,
-        bird::tern
-    }));
+TEST_CASE("Simple deserialisation") {
+    CHECK(npp::parse_enum<::bird>("Owl") == ::bird::owl);
+    CHECK(!npp::parse_enum<::bird>("Peacock").has_value());
 }
 
 
@@ -69,38 +46,25 @@ namespace {
 
 enum class messy_stuff {
     stuff1,
-    stuffl,
-    stuff2
+    stuff2,
+    stuff3
 };
 
 } // anonymous namespace
 
 
 template <>
-struct fmt::formatter<messy_stuff> {
-    constexpr auto parse(fmt::format_parse_context& ctx) -> fmt::format_parse_context::iterator {
-        auto it = ctx.begin();
-        if (it != ctx.end() && *it != '}') {
-            throw fmt::format_error("invalid messy stuff format");
-        }
-        return it;
-    }
+struct npp::enum_serialiser<::messy_stuff> {
+    static const std::unordered_map<::messy_stuff, std::string> mapping;
+};
 
-    auto format(messy_stuff s, fmt::format_context& ctx) const -> fmt::format_context::iterator {
-        switch(s) {
-            case messy_stuff::stuff1: return fmt::format_to(ctx.out(), "stuff_1");
-            case messy_stuff::stuffl: return fmt::format_to(ctx.out(), "stuff_1");
-            case messy_stuff::stuff2: return fmt::format_to(ctx.out(), "stuff_2");
-        }
-        throw npp::unreachable();
-    }
+const std::unordered_map<::messy_stuff, std::string> npp::enum_serialiser<::messy_stuff>::mapping = {
+    { ::messy_stuff::stuff1, "Stuff1" },
+    { ::messy_stuff::stuff2, "Stuff2" }
 };
 
 
-TEST_CASE("Bad enum declaration") {
-    CHECK_THROWS(npp::enum_parser<messy_stuff>({
-        messy_stuff::stuff1,
-        messy_stuff::stuff2,
-        messy_stuff::stuffl
-    }));
+TEST_CASE("Missing enum member") {
+    CHECK(!npp::parse_enum<::messy_stuff>("Stuff3").has_value());
+    CHECK_THROWS(fmt::format("{}", ::messy_stuff::stuff3));
 }
