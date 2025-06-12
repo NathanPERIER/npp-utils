@@ -5,14 +5,14 @@
 
 namespace npp {
 
-void write_to_file(const std::string& filename, const char* data, const size_t size) {
-	std::ofstream out(filename, std::ios::out | std::ios::binary);
-	out.write(data, size);
-	out.close();
+void write_to_file(const std::string& filepath, std::string_view text) {
+	std::ofstream out(filepath, std::ios::out);
+	out.write(text.data(), text.size());
 }
 
-void write_to_file(const std::string& filename, const uint8_t* data, const size_t size) {
-	write_to_file(filename, reinterpret_cast<const char*>(data), size);
+void write_to_file(const std::string& filepath, std::span<const uint8_t> binary) {
+	std::ofstream out(filepath, std::ios::out | std::ios::binary);
+	out.write(reinterpret_cast<const char*>(binary.data()), binary.size());
 }
 
 
