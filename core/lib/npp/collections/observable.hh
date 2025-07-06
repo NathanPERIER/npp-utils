@@ -5,6 +5,7 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
+#include <variant>
 
 
 
@@ -42,6 +43,47 @@ public:
     void trigger_update(const T& value) {
         for(const auto& e: _callbacks) {
             e.second(value);
+        }
+    }
+
+private:
+    std::size_t _prev_id = 0;
+    std::unordered_map<std::size_t, callback_type> _callbacks;
+
+};
+
+
+template <>
+class callback_holder<std::monostate> {
+
+public:
+    callback_holder() {}
+
+    callback_holder(callback_holder<std::monostate>&&) = delete;
+    callback_holder<std::monostate>& operator=(callback_holder<std::monostate>&&) = delete;
+    
+    callback_holder(const callback_holder<std::monostate>&) = delete;
+    callback_holder<std::monostate>& operator=(const callback_holder<std::monostate>&) = delete;
+
+    using callback_type = std::function<void()>;
+
+    std::size_t add_callback(callback_type&& cb) {
+        _prev_id++;
+        _callbacks.insert({_prev_id, std::forward<callback_type>(cb)});
+        return _prev_id;
+    }
+
+    void disarm(std::size_t id) {
+        const auto it = _callbacks.find(id);
+        if(it == _callbacks.end()) {
+            return;
+        }
+        _callbacks.erase(it);
+    }
+
+    void trigger_update() {
+        for(const auto& e: _callbacks) {
+            e.second();
         }
     }
 
@@ -156,6 +198,55 @@ private:
     std::shared_ptr<T> _value;
     std::shared_ptr<T> _working_copy = nullptr;
     std::shared_ptr<npp::detail::callback_holder<T>> _holder;
+
+};
+
+
+template <>
+class observable<std::monostate> {
+
+public:
+    observable(): _holder(std::make_shared<npp::detail::callback_holder<std::monostate>>()) {}
+
+    static observable<std::monostate> make() {
+        return observable<std::monostate>();
+    }
+
+    void prime() {
+        _edited = true;
+    }
+
+    void abort_changes() {
+        _edited = false;
+    }
+
+    bool has_changes() const {
+        return _edited;
+    }
+
+    void commit_changes() {
+        if(!has_changes()) {
+            return;
+        }
+        trigger();
+    }
+
+    void trigger() {
+        _edited = false;
+        _holder->trigger_update();
+    }
+
+    subscription<std::monostate> subscribe(npp::detail::callback_holder<std::monostate>::callback_type callback, bool call_now = false) {
+        if(call_now) {
+            callback();
+        }
+        const std::size_t id = _holder->add_callback(std::move(callback));
+        return subscription<std::monostate>(_holder, id);
+    }
+
+private:
+    bool _edited = false;
+    std::shared_ptr<npp::detail::callback_holder<std::monostate>> _holder;
 
 };
 

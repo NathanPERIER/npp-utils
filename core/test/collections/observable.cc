@@ -152,3 +152,27 @@ TEST_CASE("Check edit with uncomparable struct") {
     obs.working_copy()->i = 0;
     CHECK(obs.has_changes());
 }
+
+TEST_CASE("Observable without a value") {
+    bool called = false;
+    npp::observable<std::monostate> obs;
+    CHECK(!obs.has_changes());
+    npp::subscription sub = obs.subscribe([&called]() {
+        called = true;
+    });
+    obs.prime();
+    CHECK(obs.has_changes());
+    CHECK(!called);
+    obs.abort_changes();
+    CHECK(!obs.has_changes());
+    CHECK(!called);
+    obs.trigger();
+    CHECK(called);
+    called = false;
+    CHECK(!obs.has_changes());
+    obs.prime();
+    obs.commit_changes();
+    CHECK(called);
+    called = false;
+    CHECK(!obs.has_changes());
+}
