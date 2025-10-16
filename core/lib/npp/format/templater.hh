@@ -13,21 +13,6 @@
 #include "npp/typing/map.hh"
 
 
-namespace npp::detail {
-
-struct format_replace_variable {
-    std::string_view variable_name;
-};
-
-struct format_raw_text {
-    npp::lazy_string text;
-};
-
-using pattern_piece = std::variant<format_raw_text, format_replace_variable>;
-
-} // namespace npp::detail
-
-
 namespace npp {
 
 class variable_repository {
@@ -71,29 +56,22 @@ public:
     format_pattern(const format_pattern&) = default;
     format_pattern(format_pattern&&) = default;
     
-    bool has_variables() const { return !_variable_indexes.empty(); }
+    bool has_variables() const { return !_pieces.empty(); }
 
-    std::unordered_set<std::string_view> variables() const {
-        std::unordered_set<std::string_view> res;
-        for(const auto& var: _variable_indexes) {
-            res.insert(var.first);
-        }
-        return res;
-    }
-
-    void specialise(const variable_repository& vars);
-    format_pattern specialised(const variable_repository& vars) const;
+    std::unordered_set<std::string_view> variables() const;
 
     std::string format(const variable_repository& vars) const;
 
 private:
     std::shared_ptr<std::string> _buffer;
-    std::vector<npp::detail::pattern_piece> _pieces;
-    npp::string_umap<std::vector<size_t>> _variable_indexes;
 
-    void add_raw_text(std::string_view raw);
-    void add_variable_block(std::string_view variable);
+    struct pattern_piece {
+        std::vector<std::string_view> raw_text;
+        std::string_view variable;
+    };
 
+    std::vector<pattern_piece> _pieces;
+    std::vector<std::string_view> _trailing_text;
 };
 
 } // namespace npp
