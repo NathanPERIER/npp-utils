@@ -14,21 +14,16 @@ class number_range {
 public:
     using element_type = Ring::element_type;
 
-    number_range(element_type begin, element_type extent): _begin(begin), _extent(extent) {
-        if(_extent == Ring::zero()) {
-            _begin = Ring::zero();
-        } else if(_extent < Ring::zero()) [[unlikely]] {
-            _begin -= _extent;
-            _extent = Ring::zero() - _extent;
-        }
+    number_range(element_type begin, element_type end): _begin(begin), _end(end) {
+        assert(_begin <= _end);
     }
-    number_range(): _begin(Ring::zero()), _extent(Ring::zero()) {}
+    number_range(): _begin(Ring::zero()), _end(Ring::zero()) {}
 
     element_type begin() const { return _begin; }
-    element_type extent() const { return _extent; }
-    element_type end() const { return _begin + _extent; }
+    element_type size() const { return _end - _begin; }
+    element_type end() const { return _end; }
 
-    bool empty() const { return _extent == Ring::zero(); }
+    bool empty() const { return _begin == _end; }
 
     bool contains(element_type elt) const {
         return (begin() <= elt) && (elt <= end());
@@ -42,7 +37,7 @@ public:
 
 private:
     element_type _begin;
-    element_type _extent;
+    element_type _end;
 };
 
 
@@ -104,9 +99,9 @@ public:
         if(it == _ranges.end()) {
             it = _ranges.begin();
             if(elt == it->begin() + Ring::one()) {
-                *it = range_type(it->begin() - Ring::one(), it->extent() + Ring::one());
+                *it = range_type(it->begin() - Ring::one(), it->end());
             } else {
-                _ranges.emplace(it, elt, Ring::one());
+                _ranges.emplace(it, elt, elt + Ring::one());
             }
             return;
         }
@@ -117,17 +112,17 @@ public:
         const bool is_next_start = (next_it != _ranges.end()) && (next_it->begin() == it->end() + Ring::one());
         if(elt == it->end() + Ring::one()) {
             if(is_next_start) {
-                *it = range_type(it->begin(), next_it->end() - it->begin());
+                *it = range_type(it->begin(), next_it->end());
                 _ranges.erase(next_it);
             } else {
-                *it = range_type(it->begin(), it->extent() + Ring::one());
+                *it = range_type(it->begin(), it->end() + Ring::one());
             }
             return;
         }
         if(is_next_start) {
-            *next_it = range_type(next_it->begin() - Ring::one(), next_it->extent() + Ring::one());
+            *next_it = range_type(next_it->begin() - Ring::one(), next_it->end());
         } else {
-            _ranges.emplace_back(elt, Ring::one());
+            _ranges.emplace_back(elt, elt + Ring::one());
         }
     }
 
@@ -142,15 +137,15 @@ public:
             return;
         }
         if(elt == it->begin()) {
-            *it = range_type(it->begin() + Ring::one(), it->extent() - Ring::one());
+            *it = range_type(it->begin() + Ring::one(), it->end());
             return;
         }
         if(elt == it->end()) {
-            *it = range_type(it->begin(), it->extent() - Ring::one());
+            *it = range_type(it->begin(), it->end() - Ring::one());
             return;
         }
-        range_type first_part(it->begin(), elt - Ring::one() - it->begin() );
-        *it = range_type(elt + Ring::one(), it->end() - (elt + Ring::one()));
+        range_type first_part(it->begin(), elt - Ring::one());
+        *it = range_type(elt + Ring::one(), it->end());
         _ranges.insert(it, first_part);
     }
 
