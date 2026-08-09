@@ -1,3 +1,4 @@
 option('parser_lib', type : 'feature', value : 'auto')
 option('json_lib', type : 'feature', value : 'auto')
+option('solver_lib', type : 'feature', value : 'auto')
 option('unix_lib', type : 'feature', value : 'auto')

@@ -21,6 +21,7 @@ catch2_dep = catch2_proj.get_variable('catch2_with_main_dep')
 
 enable_parser_lib = get_option('parser_lib').enabled() or (get_option('parser_lib').auto() and not meson.is_subproject())
 enable_json_lib   = get_option('json_lib').enabled() or (get_option('json_lib').auto() and not meson.is_subproject())
+enable_solver_lib = get_option('solver_lib').enabled() or (get_option('solver_lib').auto() and not meson.is_subproject())
 enable_unix_lib   = get_option('unix_lib').enabled() or (get_option('unix_lib').auto() and not meson.is_subproject() and target_machine.system() == 'linux')
 
 
@@ -32,6 +33,10 @@ endif
 
 if enable_json_lib
   subdir('json')
+endif
+
+if enable_solver_lib
+  subdir('constraint_solver')
 endif
 
 if enable_unix_lib
