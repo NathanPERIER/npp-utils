@@ -3,14 +3,13 @@
 
 #include <algorithm>
 #include <optional>
-#include <string>
 #include <unordered_set>
 #include <variant>
 #include <vector>
 
+#include "npp/collections/string_umap.hh"
 #include "npp/string/lazy.hh"
 #include "npp/typing/functional.hh"
-#include "npp/typing/map.hh"
 
 
 namespace npp {

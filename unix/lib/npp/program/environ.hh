@@ -5,7 +5,7 @@
 #include <optional>
 #include <vector>
 
-#include "npp/typing/map.hh"
+#include "npp/collections/string_map.hh"
 
 
 /*
